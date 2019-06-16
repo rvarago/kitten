@@ -1,0 +1,8 @@
+language: cpp
+
+services:
+  - docker
+
+script:
+  - make env-test
+  - make env-conan-package WITH_TESTS=false PACKAGE_VERSION=ci
