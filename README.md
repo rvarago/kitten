@@ -4,18 +4,21 @@ A simple library that introduces monad-like types to simplify composition for th
 
 ## Problem description
 
-Functors and monads are mathematical entities studied in Category Theory and they have a plenty of applications in
-Software Engineering, particularly in Functional Programming (FP).
+Functors and monads are mathematical entities studied in Category Theory and they have plenty of applications in
+Software Engineering, particularly in Functional Programming (FP). Moreover, they are structures that must respect some
+laws in order to valid true functors and monads, [learnyouahaskell](http://learnyouahaskell.com/functors-applicative-functors-and-monoids)
+provides a very good explanation about such laws in terms of programming languages, but of course, there are many other
+sources to learn about them.
 
 Although they're fairly abstract concepts, there are many practical applications for them when we want to compose
-_effectful functions_. We can think about a effectful function as a function ``f`` that instead of returning a value of type
+_effectful functions_. We can think about an effectful function as a function ``f`` that instead of returning a value of type
 ``A`` it returns a value of type ``X<A>`` where ``X`` represents an effect which models an "extra information" about the computation
 done inside ``f``.
 
 For example:
 
-- A function ``f`` that can be fail to produce a value of type ``A`` might return an ``std::optional<A>``
-where ``td::optional`` is an effect that models absence of a value.
+- A function ``f`` that can fail to produce a value of type ``A`` might return an ``std::optional<A>``
+where ``std::optional`` is an effect that models the absence of a value.
 - A function ``f`` that can return multiple values of type ``A`` might return an ``std::vector<A>`` where
 ``std::vector`` is an effect that models multiple values.
 
@@ -35,7 +38,7 @@ functions involved?
 Now, consider ``f`` as an effectful function: ``f: A -> X<B>``, where ``X`` models some effect. We can't compose it
 ``g: B -> C`` anymore, since it expects ``B`` and can't be fed with an ``X<B>``.
 
-Given that we can't do usual function composition, we need a more powerful way to do composition.
+Given that we can't do the usual function composition, we need a more powerful way to do composition.
 
 We need a functor.
 
@@ -81,7 +84,7 @@ such instances, it's then possible to use the combinators available as free func
 - ``fmap``
 - ``bind``
 
-Also, to simplify notation, they also come as overloaded operators that enable a, hopefully nicer, infix syntax:
+Also, to simplify notation, they also come as overloaded operators that enable a, hopefully, nicer, infix syntax:
 
 - ``|`` as an alias for ``fmap``
 - ``>>`` as an alias for ``bind``
