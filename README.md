@@ -93,6 +93,9 @@ The combinators are available conveniently in the header: ``kitten/kitten.h``, o
 The following types are currently supported as both functors and monads:
 
 - ``std::optional<T>``
+- ``std::deque<T>``
+- ``std::list<T>``
+- ``std::vector<T>``
 
 ## Requirements
 
