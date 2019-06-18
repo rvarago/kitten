@@ -4,6 +4,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJECT_NAME}
         optional_test.cpp
+        sequence_container_test.cpp
         main.cpp
 )
 
