@@ -88,6 +88,12 @@ Also, to simplify notation, they also come as overloaded operators that enable a
 
 The combinators are available conveniently in the header: ``kitten/kitten.h``, or by importing each one separately.
 
+### Adapters
+
+The following types are currently supported as both functors and monads:
+
+- ``std::optional<T>``
+
 ## Requirements
 
 * C++17
