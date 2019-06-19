@@ -89,7 +89,8 @@ Also, to simplify notation, they also come as overloaded operators that enable a
 - ``|`` as an alias for ``fmap``
 - ``>>`` as an alias for ``bind``
 
-The combinators are available conveniently in the header: ``kitten/kitten.h``, or by importing each one separately.
+The combinators are available conveniently in the header: ``kitten/kitten.h``, or by importing each one separately. And
+the main namespace is ``rvarago::kitten``.
 
 ### Adapters
 
@@ -99,6 +100,9 @@ The following types are currently supported as both functors and monads:
 - ``std::deque<T>``
 - ``std::list<T>``
 - ``std::vector<T>``
+- ``either<A, E>``: a *left-biased* alias for ``std::variant<A, E>``. And by left-biased, I mean that the mapping only
+happens for the left type parameter ``A``, for instance ``fmap`` receives a function `f: A -> B` and then
+returns ``either<B, E>``
 
 ## Requirements
 
