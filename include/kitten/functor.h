@@ -21,7 +21,7 @@ namespace rvarago::kitten {
      * Forwards to the functor implementation.
      *
      * @param input a functor fa: F[A]
-     * @param f a function A -> that maps over the value wrapped inside fa to yield a value b: B
+     * @param f a function A -> B that maps over the value wrapped inside fa to yield a value b: B
      * @return a new functor fb: F[B] resulting from applying f over the wrapped value inside fa
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
