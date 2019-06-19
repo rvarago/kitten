@@ -6,6 +6,7 @@ add_executable(${PROJECT_NAME}
         optional_test.cpp
         sequence_container_test.cpp
         main.cpp
+        either_test.cpp
 )
 
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU|Clang")
