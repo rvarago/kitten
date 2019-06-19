@@ -25,7 +25,7 @@ namespace rvarago::kitten {
      * @return a new functor fb: F[B] resulting from applying f over the wrapped value inside fa
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
-    decltype(auto) fmap(F<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) fmap(F<A, Rest...> const& input, UnaryFunction f) {
         return functor<F>::fmap(input, f);
     }
 
@@ -33,7 +33,7 @@ namespace rvarago::kitten {
      * Infix version of fmap.
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
-    decltype(auto) operator|(F<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) operator|(F<A, Rest...> const& input, UnaryFunction f) {
         return fmap(input, f);
     }
 }
