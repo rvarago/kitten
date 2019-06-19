@@ -54,6 +54,17 @@ To do, we could do:
 
 `fmap(f(), g)`
 
+One example of using a functor is:
+
+```
+auto const maybe_name = maybe_find_person() | get_name; // or fmap(maybe_find_person(), get_name)
+```
+
+Where `maybe_find_person` returns `std::optional<person>`, and then the wrapped object of type`person` is fed into
+`get_name` that returns an object of type `name`.
+
+The result of the whole composition is then of type `std::optional<name>`.
+
 ### Monads
 
 What happens if the not only `f` is an effectul function `f: A -> X<B>`, but also `g` is `g: B -> X<C>`. How can
@@ -76,6 +87,17 @@ To do, we could do:
 
 `bind(f(), g)`
 
+One example of using a monad is:
+
+```
+auto const maybe_name = maybe_find_person() >> maybe_get_name; // or bind(maybe_find_person(), maybe_get_name)
+```
+
+Where `maybe_find_person` returns `std::optional<person>`, and then the wrapped object of type`person` is fed into
+`maybe_get_name` that itself returns an object of type `std::optional<name>`.
+
+The result of the whole composition is then of type `std::optional<name>`.
+
 ## Multi-functors
 
 A multi-functor generalizes a functor in the sense that instead of having only 1 type parameter, it can have `N` different types.
@@ -92,8 +114,8 @@ to `std::variant<A2, B2, C2>` via several functions `f: (`, using _kitten_, we c
 auto const variant_A2_B2_C2 = variant_A1_B1_C1 || syntax::overloaded {
     [](A1 value) { return A1_to_A2(value); },
     [](B1 value) { return B1_to_B2(value); },
-    [](C1 value) { return C1_to_C2(value); },
- };
+    [](C1 value) { return C1_to_C2(value); }
+};
 ```
 
 Where `syntax::overloaded` is a helper function that enables to create an object that receives a set of lambdas, and the
