@@ -29,7 +29,7 @@ namespace rvarago::kitten {
      * @return a new monad mb: M[B] resulting from applying f over the wrapped value inside ma and then flattening the result
      */
     template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
-    decltype(auto) bind(M<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) bind(M<A, Rest...> const& input, UnaryFunction f) {
         return monad<M>::bind(input, f);
     }
 
@@ -37,7 +37,7 @@ namespace rvarago::kitten {
      * Infix version of bind.
      */
     template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
-    decltype(auto) operator>>(M<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) operator>>(M<A, Rest...> const& input, UnaryFunction f) {
         return bind(input, f);
     }
 
