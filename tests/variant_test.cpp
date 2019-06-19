@@ -6,12 +6,12 @@
 
 #include <kitten/instances/variant.h>
 
+#include "utils.h"
+
 using namespace rvarago::kitten;
+using test::utils::is_same_after_decaying;
 
 namespace {
-
-    template <typename T1, typename T2>
-    inline constexpr bool is_same_after_decaying = std::is_same<std::decay_t<T1>, std::decay_t<T2>>::value;
 
     struct error_t final {
         explicit error_t(int _code) : code{_code} {}

@@ -22,6 +22,11 @@ else()
     )
 endif()
 
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
 find_package(gtest REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
