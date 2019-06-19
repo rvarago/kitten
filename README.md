@@ -11,98 +11,132 @@ provides a very good explanation about such laws in terms of programming languag
 sources to learn about them.
 
 Although they're fairly abstract concepts, there are many practical applications for them when we want to compose
-_effectful functions_. We can think about an effectful function as a function ``f`` that instead of returning a value of type
-``A`` it returns a value of type ``X<A>`` where ``X`` represents an effect which models an "extra information" about the computation
-done inside ``f``.
+_effectful functions_. We can think about an effectful function as a function `f` that instead of returning a value of type
+`A` it returns a value of type `X<A>` where `X` represents an effect which models an "extra information" about the computation
+done inside `f`.
 
 For example:
 
-- A function ``f`` that can fail to produce a value of type ``A`` might return an ``std::optional<A>``
-where ``std::optional`` is an effect that models the absence of a value.
-- A function ``f`` that can return multiple values of type ``A`` might return an ``std::vector<A>`` where
-``std::vector`` is an effect that models multiple values.
+- A function `f` that can fail to produce a value of type `A` might return an `std::optional<A>`
+where `std::optional` is an effect that models the absence of a value.
+- A function `f` that can return multiple values of type `A` might return an `std::vector<A>` where
+`std::vector` is an effect that models multiple values.
 
-When we have functions ``f: A -> B`` and ``g: B -> C`` we can compose these two functions into a new functions
-``h: A -> C`` by using the usual function composition:
+When we have functions `f: A -> B` and `g: B -> C` we can compose these two functions into a new functions
+`h: A -> C` by using the usual function composition:
 
-`` h(x) = g(f(x)), A -> C``
+` h(x) = g(f(x)), A -> C`
 
-Therefore, it eliminates the intermediate steps involving ``B``.
+Therefore, it eliminates the intermediate steps involving `B`.
 
-That's only possible because the co-domain ``A`` of ``f`` matches with the domain ``B`` of ``g``, i.e.
+That's only possible because of the co-domain `A` of `f` matches with the domain `B` of `g`, i.e.
 the output of the first function can go into the input of the second function. But What happens when we have effectful
 functions involved?
 
 ### Functors
 
-Now, consider ``f`` as an effectful function: ``f: A -> X<B>``, where ``X`` models some effect. We can't compose it
-``g: B -> C`` anymore, since it expects ``B`` and can't be fed with an ``X<B>``.
+Now, consider `f` as an effectful function: `f: A -> X<B>`, where `X` models some effect. We can't compose it
+`g: B -> C` anymore, since it expects `B` and can't be fed with an `X<B>`.
 
 Given that we can't do the usual function composition, we need a more powerful way to do composition.
 
 We need a functor.
 
-If ``X<T>`` admits a functor for some type parameter ``T``, we can compose ``f`` and ``g`` by using ``fmap``:
+If `X<T>` admits a functor for some type parameter `T`, we can compose `f` and `g` by using `fmap`:
 
-``fmap(X<A>, w: A -> B): X<B>``
+`fmap(X<A>, w: A -> B): X<B>`
 
-``fmap`` receives a functor ``X<A>``, a function that would do the composition with the "raw" types" ``A`` and ``B``, and
-it returns a new functor ``X<B>``. It basically unwraps ``X<A>``, feeds ``A`` into ``w``, wraps the output of ``w`` into
-an ``X<B>``, and then finally returns it.
+`fmap` receives a functor `X<A>`, a function that would do the composition with the "raw" types" `A` and `B`, and
+it returns a new functor `X<B>`. It basically unwraps `X<A>`, feeds `A` into `w`, wraps the output of `w` into
+an `X<B>`, and then finally returns it.
 
 To do, we could do:
 
-``fmap(f(), g)``
+`fmap(f(), g)`
 
 ### Monads
 
-What happens if the not only ``f`` is an effectul function ``f: A -> X<B>``, but also ``g`` is ``g: B -> X<C>``. How can
-we compose ``f`` and ``g``?
+What happens if the not only `f` is an effectul function `f: A -> X<B>`, but also `g` is `g: B -> X<C>`. How can
+we compose `f` and `g`?
 
-If we use ``fmap`` as we did before, we would end up with a return type ``X<X<B>>``, that nests the same effect. This type
-would then need to be flattened, or collapsed, into an ``X<B>``, we need a structure that knows how to flat the effects.
+If we use `fmap` as we did before, we would end up with a return type `X<X<B>>`, that nests the same effect. This type
+would then need to be flattened, or collapsed, into an `X<B>`, we need a structure that knows how to flat the effects.
 
 We need a structure more powerful than a functor, we need a monad.
 
-If ``X<T>`` admits a monad for some type parameter ``T``, we can compose ``f`` and ``g`` by using ``bind``:
+If `X<T>` admits a monad for some type parameter `T`, we can compose `f` and `g` by using `bind`:
 
-``bind(X<A>, w: A -> X<B>): X<B>``
+`bind(X<A>, w: A -> X<B>): X<B>`
 
-``bind`` receives a monad ``X<A>``, a function that would do the composition with the types ``A`` and
-``X<B>``, and it returns a new monad ``X<B>``. It basically unwraps ``X<A>``, feeds ``A`` into ``w``, and returns the
-output of ``w`` which is already wrapped inside a monad, do any necessary flattening before.
+`bind` receives a monad `X<A>`, a function that would do the composition with the types `A` and
+`X<B>`, and it returns a new monad `X<B>`. It basically unwraps `X<A>`, feeds `A` into `w`, and returns the
+output of `w` which is already wrapped inside a monad, do any necessary flattening before.
 
 To do, we could do:
 
-``bind(f(), g)``
+`bind(f(), g)`
+
+## Multi-functors
+
+A multi-functor generalizes a functor in the sense that instead of having only 1 type parameter, it can have `N` different types.
+
+Given a multi-functor of arity 2, also called bi-functor,`X<A1, B1>`, and the functions `fa: A1 -> A2` and `fb B1-> B2`,
+a multi-functor uses `nfmap` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
+
+To simplify the syntax, the infix
+
+An interesting use case is where we have a function that returns an `std::variant<A1, B1, C1>` and we want to map such type
+to `std::variant<A2, B2, C2>` via several functions `f: (`, using _kitten_, we could do:
+
+```
+auto const variant_A2_B2_C2 = variant_A1_B1_C1 || syntax::overloaded {
+    [](A1 value) { return A1_to_A2(value); },
+    [](B1 value) { return B1_to_B2(value); },
+    [](C1 value) { return C1_to_C2(value); },
+ };
+```
+
+Where `syntax::overloaded` is a helper function that enables to create an object that receives a set of lambdas, and the
+right overload is selected at compile-time depending on the type held by the `std::variant<A1, B1, C1>`.
 
 ## kitten
 
-_kitten_ relies on the STL to provide functor and monad instances for some C++ data types. Given that the data type admits
+_kitten_ relies on the STL to provide functor, monad, and multi-functor instances for some C++ data types. Given that the data type admits
 such instances, it's then possible to use the combinators available as free functions:
 
-- ``fmap``
-- ``bind``
+- `fmap` for types that have functor instances
+- `bind` for types that have monad instances
+- `nfmap` for types that have multi-functor instances
 
 Also, to simplify notation, they also come as overloaded operators that enable a, hopefully, nicer, infix syntax:
 
-- ``|`` as an alias for ``fmap``
-- ``>>`` as an alias for ``bind``
+- `|` as an alias for `fmap`
+- `>>` as an alias for `bind`
+- `||` as an alias for `nfmap`
 
-The combinators are available conveniently in the header: ``kitten/kitten.h``, or by importing each one separately. And
-the main namespace is ``rvarago::kitten``.
+The combinators are available conveniently in the header: `kitten/kitten.h`, or by importing each one separately. And
+the main namespace is `rvarago::kitten`.
+
+Note that it's possible that a type may not admit instances for all the structures, e.g a type may have a functor but not a monad.
 
 ### Adapters
 
-The following types are currently supported as both functors and monads:
+The following types are currently supported:
 
-- ``std::optional<T>``
-- ``std::deque<T>``
-- ``std::list<T>``
-- ``std::vector<T>``
-- ``either<A, E>``: a *left-biased* alias for ``std::variant<A, E>``. And by left-biased, I mean that the mapping only
-happens for the left type parameter ``A``, for instance ``fmap`` receives a function `f: A -> B` and then
-returns ``either<B, E>``
+|         Type         | Functor | Monad | Multi-functor |
+|:--------------------:|:-----:|:-------:|:-------------:|
+| `either<A, E>`       |   x   | x       |               |
+| `std::deque<T>`      |   x   | x       |               |
+| `std::list<T>`       |   x   | x       |               |
+| `std::optional<T>`   |   x   | x       |               |
+| `std::variant<Ts...>`|       |         | x             |
+| `std::vector<T>`     |   x   | x       |               |
+
+- `either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
+happens for the left type parameter `A`. For instance `fmap` receives a function `f: A -> B` and then
+returns `either<B, E>`.
+
+
 
 ## Requirements
 
@@ -123,60 +157,60 @@ unit tests, and clear the build folder.
 
 * Compile (by default, it also compiles the unit tests):
 
-```
+``
 make
-```
+``
 
 By default, it also builds the unit tests, you can disable the behavior by:
 
-```
+``
 make WITH_TESTS=false
-```
+``
 
 
 The build always assumes that the default profile (*profiles/common*) applies to your build. If that's not, then you
 can specify your profile by setting _PROFILE_ as:
 
-```
+``
 make PROFILE=<path_to_your_profile>
-```
+``
 
 * To run the unit tests:
 
-```
+``
 make test
-```
+``
 
 ### Run unit tests inside a Docker container
 
 Optionally, it's also possible to run the unit tests inside a Docker container by executing:
 
-```
+``
 make env-test
-```
+``
 
 ## Installing on the system
 
 To install _kitten_:
 
-```
+``
 sudo make install
-```
+``
 
 Then, it's possible to import _kitten_ into external CMake projects, say in a target _myExample_, by simply adding the
 following commands to its _CMakeLists.txt_:
 
-```
+``
 find_package(kitten)
 target_link_libraries(myExample rvarago::kitten)
-```
+``
 
 ## Packaging via Conan
 
 To generate a package via Conan:
 
-```
+``
 make conan-package
-```
+``
 
 This will build the package _kitten_, run the test package, and then install it in the local Conan cache.
