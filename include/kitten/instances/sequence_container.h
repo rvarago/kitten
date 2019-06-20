@@ -1,5 +1,5 @@
-#ifndef RVARAGO_KITTEN_VECTOR_H
-#define RVARAGO_KITTEN_VECTOR_H
+#ifndef RVARAGO_KITTEN_SEQUENCE_CONTAINER_H
+#define RVARAGO_KITTEN_SEQUENCE_CONTAINER_H
 
 #include "kitten/detail/traits.h"
 #include "kitten/functor.h"
