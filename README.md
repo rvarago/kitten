@@ -1,6 +1,6 @@
 # kitten
 
-A simple library based on Category Theory that introduces monadic composition to some C++ type constructors.
+This is a small header-only library with some machinery meant to extend the already great STL with some concepts inspired by Category Theory, such as functors and monads, in order to make the composition of some C++ type constructors even simpler.
 
 ## Problem description
 
