@@ -2,6 +2,8 @@
 
 This is a small header-only library with some machinery meant to extend the already great STL with some concepts inspired by Category Theory, such as functors and monads, in order to make the composition of some C++ type constructors even simpler.
 
+[![Build Status](https://travis-ci.org/rvarago/absent.svg?branch=master)](https://travis-ci.org/rvarago/kitten)
+
 ## Problem description
 
 Functors, monads, etc are mathematical structures studied in Category Theory that capture the essence of composition. And given that programming is all about composition, they have plenty of practical applications, particularly in Pure Functional Programming.
