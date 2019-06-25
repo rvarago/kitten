@@ -10,7 +10,7 @@ using test::utils::is_same_after_decaying;
 
 namespace {
 
-    TEST(optional, fmap_should_returnEmpty_when_empty) {
+    TEST(optional, map_should_returnEmpty_when_empty) {
         auto const none = std::optional<int>{};
         auto const mapped_none = none | [](auto v){ return std::to_string(v * 10); };
 
@@ -19,7 +19,7 @@ namespace {
         EXPECT_TRUE(!mapped_none.has_value());
     }
 
-    TEST(optional, fmap_should_returnMapped_when_notEmpty) {
+    TEST(optional, map_should_returnMapped_when_notEmpty) {
         auto const some_one = std::optional<int>{1};
         auto const mapped_some = some_one | [](auto v){ return std::to_string(v * 10); };
 

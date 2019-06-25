@@ -9,7 +9,7 @@ namespace rvarago::kitten {
     * Given a monad ma: M[A] and a function f: A -> M[B]
     *  It uses f to map over over ma, flat the return type, and then return a new monad mb: M[B].
     *
-    * Note that if we had done as we do for functors, i.e. to do fmap(ma, f), we'd have a M[M[B]] that should then be flattened.
+    * Note that if we had done as we do for functors, i.e. to do map(ma, f), we'd have a M[M[B]] that should then be flattened.
     * but bind does both the mapping and then the flattening.
     *
     * Laws:

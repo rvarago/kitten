@@ -22,7 +22,7 @@ namespace {
 
     TYPED_TEST_CASE(SequenceContainerTest, sequence_containers);
 
-    TYPED_TEST(SequenceContainerTest, fmap_should_returnEmpty_when_empty) {
+    TYPED_TEST(SequenceContainerTest, map_should_returnEmpty_when_empty) {
         using T  = typename TestFixture::type;
 
         auto const empty = T{};
@@ -32,7 +32,7 @@ namespace {
     }
 
 
-    TYPED_TEST(SequenceContainerTest, fmap_should_returnMapped_when_notEmpty) {
+    TYPED_TEST(SequenceContainerTest, map_should_returnMapped_when_notEmpty) {
         using T  = typename TestFixture::type;
 
         auto const container = T{1, 2};
