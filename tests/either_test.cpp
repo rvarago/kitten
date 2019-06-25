@@ -15,7 +15,7 @@ namespace {
         int const code;
     };
 
-    TEST(either, fmap_should_returnEmpty_when_empty) {
+    TEST(either, map_should_returnEmpty_when_empty) {
         auto const error = types::either<int, error_t>{error_t{-1}};
         auto const mapped_error = error | [](auto v){ return std::to_string(v * 10); };
 
@@ -25,7 +25,7 @@ namespace {
         EXPECT_EQ(-1, std::get<error_t>(mapped_error).code);
     }
 
-    TEST(either, fmap_should_returnMapped_when_notEmpty) {
+    TEST(either, map_should_returnMapped_when_notEmpty) {
         auto const value_one = types::either<int, error_t>{1};
         auto const mapped_value = value_one | [](auto v){ return std::to_string(v * 10); };
 

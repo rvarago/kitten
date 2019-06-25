@@ -25,7 +25,7 @@ namespace rvarago::kitten {
     struct functor<std::optional> {
 
         template <typename UnaryFunction, typename A>
-        static constexpr auto fmap(std::optional<A> const &input, UnaryFunction f) -> std::optional<decltype(f(std::declval<A>()))> {
+        static constexpr auto map(std::optional<A> const &input, UnaryFunction f) -> std::optional<decltype(f(std::declval<A>()))> {
             return monad<std::optional>::bind(input, [&f](auto const& value){ return std::optional{f(value)}; });
         }
 
