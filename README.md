@@ -114,7 +114,7 @@ Thus, the result of the whole composition is of type `std::optional<name>`.
 A multi-functor generalizes a functor in the sense that instead of having only 1 type parameter, it can have `N` different types.
 
 Given a multi-functor of arity 2, also called bi-functor,`X<A1, B1>`, and the functions `fa: A1 -> A2` and `fb: B1-> B2`,
-a multi-functor uses `nfmap` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
+a multi-functor uses `mapn` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
 
 An interesting use case for a multi-functor is where we have a function that returns an `std::variant<A1, B1, C1>` and we
 want to map such type to `std::variant<A2, B2, C2>` via several functions `fa: A1 -> A2`, `fb: B1 -> B2`, and `fc: C1 -> C2`
@@ -139,13 +139,13 @@ such instances, it's then possible to use the combinators available as free func
 
 - `map` for types that have functor instances
 - `bind` for types that have monad instances
-- `nfmap` for types that have multi-functor instances
+- `mapn` for types that have multi-functor instances
 
 Also, to simplify notation, they also come as overloaded operators that enable a, hopefully, nicer, infix syntax:
 
 - `|` as an alias for `map`
 - `>>` as an alias for `bind`
-- `||` as an alias for `nfmap`
+- `||` as an alias for `mapn`
 
 The combinators are available conveniently in the header: `kitten/kitten.h`, or by importing each one separately. And
 the main namespace is `rvarago::kitten`.
