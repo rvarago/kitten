@@ -20,16 +20,16 @@ namespace rvarago::kitten {
      * @return a new multifunctor fb: F[A2, ..., Z2] resulting from applying f over the wrapped value inside fa
      */
     template <typename UnaryFunction, template <typename ...> typename MF, typename... Rest>
-    constexpr decltype(auto) nfmap(MF<Rest...> const& input, UnaryFunction f) {
-        return multifunctor<MF>::nfmap(input, f);
+    constexpr decltype(auto) mapn(MF<Rest...> const& input, UnaryFunction f) {
+        return multifunctor<MF>::mapn(input, f);
     }
 
     /**
-     * Infix version of nfmap.
+     * Infix version of mapn.
      */
     template <typename UnaryFunction, template <typename ...> typename MF, typename A, typename... Rest>
     constexpr decltype(auto) operator||(MF<A, Rest...> const& input, UnaryFunction f) {
-        return nfmap(input, f);
+        return mapn(input, f);
     }
 }
 
