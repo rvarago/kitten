@@ -222,10 +222,10 @@ The following types are currently supported:
 |:--------------------:|:-------:|-------------|-------|:-------------:|
 |    `either<A, E>`    |    x    |     x       | x     |               |
 |  `std::optional<T>`  |    x    |     x       | x     |               |
-|    `std::deque<T>`   |    x    |             | x     |               |
-|    `std::list<T>`    |    x    |             | x     |               |
+|    `std::deque<T>`   |    x    |     x       | x     |               |
+|    `std::list<T>`    |    x    |     x       | x     |               |
 | `std::variant<T...>` |         |             |       |       x       |
-|   `std::vector<T>`   |    x    |             |       |               |
+|   `std::vector<T>`   |    x    |     x       |       |               |
 
 - `either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
 happens for the left type parameter `A`. For instance `map` receives a function `f: A -> B` and then

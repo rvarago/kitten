@@ -70,4 +70,46 @@ namespace {
         EXPECT_EQ("200", value_at(mapped_container, 3));
     }
 
+    TYPED_TEST(SequenceContainerTest, apply_should_returnEmpty_when_notEmpty) {
+        using T  = typename TestFixture::type;
+        auto const empty = T{};
+        auto const second_container = T{20, 30};
+
+        auto const sum = empty + second_container;
+        auto const product_as_string = std::tuple{second_container, empty} + [](auto const& first, auto const& second) {
+            return std::to_string(first * second);
+        };
+
+        EXPECT_TRUE(sum.empty());
+
+        EXPECT_TRUE(product_as_string.empty());
+    }
+
+    TYPED_TEST(SequenceContainerTest, apply_should_returnCombined_when_notEmpty) {
+        using T  = typename TestFixture::type;
+        auto const first_container = T{2, 3};
+        auto const second_container = T{20, 30};
+
+        auto const sum = first_container + second_container;
+        auto const product_as_string = std::tuple{second_container, first_container} + [](auto const& first, auto const& second) {
+            return std::to_string(first * second);
+        };
+
+        EXPECT_TRUE(!sum.empty());
+        EXPECT_EQ(4, sum.size());
+
+        EXPECT_EQ(22, value_at(sum, 0));
+        EXPECT_EQ(32, value_at(sum, 1));
+        EXPECT_EQ(23, value_at(sum, 2));
+        EXPECT_EQ(33, value_at(sum, 3));
+
+        EXPECT_TRUE(!product_as_string.empty());
+        EXPECT_EQ(4, product_as_string.size());
+
+        EXPECT_EQ("40", value_at(product_as_string, 0));
+        EXPECT_EQ("60", value_at(product_as_string, 1));
+        EXPECT_EQ("60", value_at(product_as_string, 2));
+        EXPECT_EQ("90", value_at(product_as_string, 3));
+    }
+
 }

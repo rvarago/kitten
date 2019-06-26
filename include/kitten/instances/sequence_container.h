@@ -2,11 +2,29 @@
 #define RVARAGO_KITTEN_SEQUENCE_CONTAINER_H
 
 #include "kitten/detail/traits.h"
+#include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
 #include "kitten/ranges/algorithm.h"
 
 namespace rvarago::kitten {
+
+    template <template <typename...> typename SequenceContainer>
+    struct applicative<SequenceContainer> {
+
+        template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
+        static constexpr auto combine(SequenceContainer<A, Rest...> const &first, SequenceContainer<B, Rest...> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
+            using ValueT = decltype(f(std::declval<A>(), std::declval<B>()));
+            auto combined_sequence = SequenceContainer<ValueT>{};
+            for (auto const& first_element : first) {
+                for (auto const& second_element: second) {
+                    combined_sequence.push_back(f(first_element, second_element));
+                }
+            }
+            return combined_sequence;
+        }
+
+    };
 
     template <template <typename...> typename SequenceContainer>
     struct monad<SequenceContainer> {
