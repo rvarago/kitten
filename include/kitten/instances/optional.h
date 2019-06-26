@@ -3,10 +3,24 @@
 
 #include <optional>
 
+#include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
 
 namespace rvarago::kitten {
+
+    template <>
+    struct applicative<std::optional> {
+
+        template <typename BinaryFunction, typename A, typename B>
+        static constexpr auto combine(std::optional<A> const &first, std::optional<B> const& second, BinaryFunction f) -> std::optional<decltype(f(std::declval<A>(), std::declval<B>()))> {
+            if (!first.has_value() || !second.has_value()) {
+                return {};
+            }
+            return f(first.value(), second.value());
+        }
+
+    };
 
     template <>
     struct monad<std::optional> {

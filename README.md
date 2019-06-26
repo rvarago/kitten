@@ -221,7 +221,7 @@ The following types are currently supported:
 |         Type         | Functor | Applicative | Monad | Multi-functor |
 |:--------------------:|:-------:|-------------|-------|:-------------:|
 |    `either<A, E>`    |    x    |             | x     |               |
-|  `std::optional<T>`  |    x    |             | x     |               |
+|  `std::optional<T>`  |    x    |     x       | x     |               |
 |    `std::deque<T>`   |    x    |             | x     |               |
 |    `std::list<T>`    |    x    |             | x     |               |
 | `std::variant<T...>` |         |             |       |       x       |

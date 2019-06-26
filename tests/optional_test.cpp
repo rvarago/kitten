@@ -48,4 +48,39 @@ namespace {
         EXPECT_EQ("10", mapped_some.value());
     }
 
+    TEST(optional, apply_should_returnEmpty_when_empty) {
+        auto const none = std::optional<int>{};
+        auto const some_three= std::optional<int>{3};
+
+        auto const sum = none + some_three;
+        auto const product_as_string = std::tuple{some_three, none} + [](auto const& first, auto const& second) {
+            return std::to_string(first * second);
+        };
+
+        static_assert(is_same_after_decaying<std::optional<int>, decltype(sum)>);
+        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(product_as_string)>);
+
+        EXPECT_TRUE(!sum.has_value());
+        EXPECT_TRUE(!product_as_string.has_value());
+    }
+
+    TEST(optional, apply_should_returnCombined_when_notEmpty) {
+        auto const some_two = std::optional<int>{2};
+        auto const some_three = std::optional<int>{3};
+
+        auto const sum = some_two + some_three;
+        auto const product_as_string = std::tuple{some_three, some_two} + [](auto const& first, auto const& second) {
+            return std::to_string(first * second);
+        };
+
+        static_assert(is_same_after_decaying<std::optional<int>, decltype(sum)>);
+        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(product_as_string)>);
+
+        EXPECT_TRUE(sum.has_value());
+        EXPECT_EQ(5, sum.value());
+        EXPECT_TRUE(product_as_string.has_value());
+        EXPECT_EQ("6", product_as_string.value());
+    }
+
+
 }
