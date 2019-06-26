@@ -3,6 +3,7 @@
 
 #include <variant>
 
+#include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
 
@@ -12,6 +13,24 @@ namespace rvarago::kitten {
         template<typename A, typename E>
         using either = std::variant<A, E>;
     }
+
+    template <>
+    struct applicative<std::variant> {
+
+        template <typename BinaryFunction, typename A, typename B, typename E>
+        static constexpr auto combine(std::variant<A, E> const &first, std::variant<B, E> const& second, BinaryFunction f) -> std::variant<decltype(f(std::declval<A>(), std::declval<B>())), E> {
+            if (std::holds_alternative<A>(first) && std::holds_alternative<B>(second)) {
+                return f(std::get<A>(first), std::get<B>(second));
+            }
+
+            if (std::holds_alternative<E>(first)) {
+                return std::get<E>(first);
+            }
+
+            return std::get<E>(second);
+        }
+
+    };
 
     template <>
     struct monad<std::variant> {
