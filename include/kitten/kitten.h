@@ -3,5 +3,6 @@
 
 #include "kitten/functor.h"
 #include "kitten/monad.h"
+#include "kitten/multifunctor.h"
 
 #endif
