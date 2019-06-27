@@ -18,7 +18,7 @@ namespace rvarago::kitten {
     * - Right identity: m >>= return == m
     * - Associativity: (m >>= f) >>= g == m >>= (\x -> f x >>= g)
     */
-    template <template <typename ...> typename M, typename Enable = void>
+    template <template <typename ...> typename M, typename = void>
     struct monad;
 
     /**

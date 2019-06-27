@@ -9,7 +9,7 @@ namespace rvarago::kitten {
      * Given a multifunctor fi: F[A1, ..., Z1] and a function f: A1, ..., Z1 -> A2, ..., Z2
      *  It uses f to map over over fa and then return a new functor fb: F[A2, ..., Z2].
      */
-    template <template <typename ...> typename MF, typename Enable = void>
+    template <template <typename ...> typename MF, typename = void>
     struct multifunctor;
 
     /**

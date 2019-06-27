@@ -14,7 +14,7 @@ namespace rvarago::kitten {
      * - Identity: map (f . g)  ==  map f . map g
      * - Composition: map id = id
      */
-    template <template <typename ...> typename F, typename Enable = void>
+    template <template <typename ...> typename F, typename = void>
     struct functor;
 
     /**
