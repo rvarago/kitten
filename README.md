@@ -74,6 +74,64 @@ Where `maybe_find_person` returns an `std::optional<person>`, and then the wrapp
 
 Thus, the result of the whole composition is of type `std::optional<name>`.
 
+### Applicatives
+
+What happens if `f` takes several arguments? For instance, we have the objects `xa: X<A>` and `xb: X<B>` and the
+function `f: (A, B) -> C`.
+How can we combine two effects `xa` and `xb` via `f` to obtain `X<C>`?
+
+If we use `map` as we did before, we wouldn't be able, because `map` accepts only one argument, and we need to somehow
+provide two.
+
+We need a structure that's more powerful than a functor, we need an applicative.
+
+If `X<T>` admits an applicative for some type parameter `T`, we can compose `f` using `combine` (also called `liftA2`):
+
+`combine(X<A>, X<B>, w: (A, B) -> C): X<C>`
+
+`combine` receives the applicatives `X<A>` and `X<B>`, a binary function `w: (A, B) -> C` that would do the composition
+of the types `A` and `B`, and it returns a new applicative `X<B>`. It basically:
+
+1. unwraps `X<A>` into `A`
+2. unwraps `X<B>` into `B`
+3. feeds `A` and `B` into `w`
+3. wraps the result `C` into `X<C>`
+4. then returns `X<C>`
+
+Hence, we can do:
+
+`combine(xa, xb, f)`
+
+Using _kitten_, one example of using an applicative is:
+
+```
+auto const maybe_three = maybe_one() + maybe_two(); // or combine(maybe_one(), maybe_two(), std::plus{})
+```
+
+Where `maybe_one` and `maybe_two` return instances of `std::optional<int>`, and then unwrapped objects of types
+`int` and `int` are fed into operator `+` (that defaults to `std::plus{}` for the unwrapped types) that returns an object
+of type `int` which is finally wrapped again in an `std::optional<int>`.
+
+Thus, the result of the whole composition is of type `std::optional<int>`.
+
+And what happens if we have n-ary rather than binary function `f`?
+
+We can simply chaining operator `+`, like:
+
+```
+auto const maybe_ten = maybe_one() + maybe_two() + maybe_three() + maybe_four(); // and so on ...
+```
+
+And what should we do if we need a different operation instead of addition?
+
+Given that operator `+` accepts two parameters, we have to use a convenient and general overload that accepts the a tuple of applicatives:
+
+```
+auto const maybe_six_as_string = std::tuple{maybe_two, maybe_three} + [](auto const& first, auto const& second) {
+            return std::to_string(first * second);
+};
+```
+
 ### Monads
 
 What happens if `f` and `g` are both effectul functions: `f: A -> X<B>` and `g: B -> X<C>`. How can
@@ -116,7 +174,7 @@ Thus, the result of the whole composition is of type `std::optional<name>`.
 A multi-functor generalizes a functor in the sense that instead of having only 1 type parameter, it can have `N` different types.
 
 Given a multi-functor of arity 2, also called bi-functor,`X<A1, B1>`, and the functions `fa: A1 -> A2` and `fb: B1-> B2`,
-a multi-functor uses `mapn` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
+a multi-functor uses `multimap` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
 
 An interesting use case for a multi-functor is where we have a function that returns an `std::variant<A1, B1, C1>` and we
 want to map such type to `std::variant<A2, B2, C2>` via several functions `fa: A1 -> A2`, `fb: B1 -> B2`, and `fc: C1 -> C2`
@@ -136,18 +194,20 @@ set of lambda expressions, and the right overload is then selected at compile-ti
 
 ## kitten
 
-_kitten_ relies on the STL to provide functor, monad, and multi-functor instances for some C++ data types. Given that the data type admits
+_kitten_ relies on the STL to provide functor, applicative, monad, and multi-functor instances for some C++ data types. Given that the data type admits
 such instances, it's then possible to use the combinators available as free functions:
 
 - `map` for types that have functor instances
+- `combine` for types that have applicative instances
 - `bind` for types that have monad instances
-- `mapn` for types that have multi-functor instances
+- `multimap` for types that have multi-functor instances
 
 Also, to simplify notation, they also come as overloaded operators that enable a, hopefully, nicer, infix syntax:
 
 - `|` as an alias for `map`
+- `+` as an alias for `combine`
 - `>>` as an alias for `bind`
-- `||` as an alias for `mapn`
+- `||` as an alias for `multimap`
 
 The combinators are available conveniently in the header: `kitten/kitten.h`, or by importing each one separately. And
 the main namespace is `rvarago::kitten`.
@@ -158,20 +218,18 @@ Note that it's possible that a type may not admit instances for all the structur
 
 The following types are currently supported:
 
-|         Type         | Functor | Monad | Multi-functor |
-|:--------------------:|:-----:|:-------:|:-------------:|
-| `either<A, E>`       |   x   | x       |               |
-| `std::deque<T>`      |   x   | x       |               |
-| `std::list<T>`       |   x   | x       |               |
-| `std::optional<T>`   |   x   | x       |               |
-| `std::variant<Ts...>`|       |         | x             |
-| `std::vector<T>`     |   x   | x       |               |
+|         Type         | Functor | Applicative | Monad | Multi-functor |
+|:--------------------:|:-------:|-------------|-------|:-------------:|
+|    `either<A, E>`    |    x    |     x       | x     |               |
+|  `std::optional<T>`  |    x    |     x       | x     |               |
+|    `std::deque<T>`   |    x    |     x       | x     |               |
+|    `std::list<T>`    |    x    |     x       | x     |               |
+| `std::variant<T...>` |         |             |       |       x       |
+|   `std::vector<T>`   |    x    |     x       |       |               |
 
 - `either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
 happens for the left type parameter `A`. For instance `map` receives a function `f: A -> B` and then
 returns `either<B, E>`.
-
-
 
 ## Requirements
 

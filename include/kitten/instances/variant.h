@@ -22,7 +22,7 @@ namespace rvarago::kitten {
     struct multifunctor<std::variant> {
 
         template <typename UnaryFunction, typename... Rest>
-        static constexpr auto mapn(std::variant<Rest...> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<Rest>()))...> {
+        static constexpr auto multimap(std::variant<Rest...> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<Rest>()))...> {
             using ResultT = std::variant<decltype(f(std::declval<Rest>()))...>;
             return std::visit([&f](auto const& value){ return ResultT{f(value)}; }, input);
         }

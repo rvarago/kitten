@@ -7,7 +7,7 @@ namespace rvarago::kitten {
      * A functor is an abstraction that allows to be mapped over.
      *
      * Given a functor fa: F[A] and a function f: A -> B
-     *  It uses f to map over over fa and then return a new functor fb: F[B].
+     *  It uses f to map over fa and then return a new functor fb: F[B].
      *
      * Laws:
      *
