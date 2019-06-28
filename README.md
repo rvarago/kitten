@@ -124,7 +124,7 @@ auto const maybe_ten = maybe_one() + maybe_two() + maybe_three() + maybe_four();
 
 And what should we do if we need a different operation instead of addition?
 
-Given that operator `+` accepts two parameters, we have to use a convenient and general overload that accepts the a tuple of applicatives:
+Given that operator `+` accepts two parameters, we have to use a convenient and general overload that accepts a tuple of two applicatives:
 
 ```
 auto const maybe_six_as_string = std::tuple{maybe_two, maybe_three} + [](auto const& first, auto const& second) {
