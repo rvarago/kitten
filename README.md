@@ -1,12 +1,16 @@
 # kitten
 
-This is a small header-only library with some machinery meant to extend the already great STL with some concepts inspired by Category Theory, such as functors and monads, in order to make the composition of some C++ type constructors even simpler.
+This is a small header-only library with some machinery meant to extend the already great STL with some concepts obtained from Category Theory, such as functors and monads, in order to make the composition of some C++ type constructors even simpler.
+
+It's basically a collection of utilities from my recent studies of Category Theory expressed in C++.
+
+Category Theory -> Category -> Cat -> Kitten 🐈
 
 [![Build Status](https://travis-ci.org/rvarago/absent.svg?branch=master)](https://travis-ci.org/rvarago/kitten)
 
 ## Problem description
 
-Functors, monads, etc are mathematical structures studied in Category Theory that capture the essence of composition. And given that programming is all about composition, they have plenty of practical applications, particularly in Pure Functional Programming.
+Functors, applicatives, monads, etc are mathematical structures studied in Category Theory that capture the essence of composition. And given that programming is all about composition, they have plenty of practical applications, particularly in Pure Functional Programming.
 
 Furthermore, they are structures that must respect mathematical laws that restrict their behavior. [learnyouahaskell](http://learnyouahaskell.com/functors-applicative-functors-and-monoids)
 provides a very good explanation about these laws in terms of programming, but of course, there are many other
