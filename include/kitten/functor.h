@@ -17,6 +17,14 @@ namespace rvarago::kitten {
     template <template <typename ...> typename F, typename = void>
     struct functor;
 
+    namespace detail {
+        template <template <typename ...> typename, typename = void>
+        struct is_functor : std::false_type{};
+
+        template <template <typename ...> typename F>
+        inline constexpr bool is_functor_v = is_functor<F>::value;
+    }
+
     /**
      * Forwards to the functor implementation.
      *
@@ -26,6 +34,7 @@ namespace rvarago::kitten {
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
     constexpr decltype(auto) map(F<A, Rest...> const& input, UnaryFunction f) {
+        static_assert(detail::is_functor_v<F>, "type constructor F does not have a functor instance");
         return functor<F>::map(input, f);
     }
 
