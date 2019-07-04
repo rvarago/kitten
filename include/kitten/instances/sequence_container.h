@@ -10,6 +10,20 @@
 namespace rvarago::kitten {
 
     template <template <typename...> typename SequenceContainer>
+    struct monad<SequenceContainer> {
+
+        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
+        static constexpr auto bind(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
+            auto mapped_sequence = decltype(f(std::declval<A>())){};
+            for (auto const& el : input) {
+                ranges::copy(f(el), std::back_inserter(mapped_sequence));
+            }
+            return mapped_sequence;
+        }
+
+    };
+
+    template <template <typename...> typename SequenceContainer>
     struct applicative<SequenceContainer> {
 
         template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
@@ -27,20 +41,6 @@ namespace rvarago::kitten {
     };
 
     template <template <typename...> typename SequenceContainer>
-    struct monad<SequenceContainer> {
-
-        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
-        static constexpr auto bind(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
-            auto mapped_sequence = decltype(f(std::declval<A>())){};
-            for (auto const& el : input) {
-                ranges::copy(f(el), std::back_inserter(mapped_sequence));
-            }
-            return mapped_sequence;
-        }
-
-    };
-
-    template <template <typename...> typename SequenceContainer>
     struct functor<SequenceContainer> {
 
         template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
@@ -49,6 +49,11 @@ namespace rvarago::kitten {
         }
 
     };
+
+    namespace detail {
+        template <template <typename...> typename SequenceContainer>
+        struct is_monad<SequenceContainer> : std::true_type{};
+    }
 
 }
 

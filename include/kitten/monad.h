@@ -1,6 +1,8 @@
 #ifndef RVARAGO_KITTEN_MONAD_H
 #define RVARAGO_KITTEN_MONAD_H
 
+#include <type_traits>
+
 namespace rvarago::kitten {
 
     /**
@@ -21,6 +23,14 @@ namespace rvarago::kitten {
     template <template <typename ...> typename M, typename = void>
     struct monad;
 
+    namespace detail {
+        template <template <typename ...> typename, typename = void>
+        struct is_monad : std::false_type{};
+
+        template <template <typename ...> typename M>
+        inline constexpr bool is_monad_v = is_monad<M>::value;
+    }
+
     /**
      * Forwards to the monad implementation.
      *
@@ -30,6 +40,7 @@ namespace rvarago::kitten {
      */
     template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
     constexpr decltype(auto) bind(M<A, Rest...> const& input, UnaryFunction f) {
+        static_assert(detail::is_monad_v<M>, "type constructor M does not have a monad instance");
         return monad<M>::bind(input, f);
     }
 
