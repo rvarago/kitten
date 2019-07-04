@@ -53,6 +53,9 @@ namespace rvarago::kitten {
     namespace detail {
         template <template <typename...> typename SequenceContainer>
         struct is_monad<SequenceContainer> : std::true_type{};
+
+        template <template <typename...> typename SequenceContainer>
+        struct is_functor<SequenceContainer> : std::true_type{};
     }
 
 }
