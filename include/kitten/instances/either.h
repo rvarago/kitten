@@ -61,6 +61,9 @@ namespace rvarago::kitten {
         struct is_monad<std::variant> : std::true_type{};
 
         template <>
+        struct is_applicative<std::variant> : std::true_type{};
+
+        template <>
         struct is_functor<std::variant> : std::true_type{};
     }
 

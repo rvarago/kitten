@@ -16,6 +16,14 @@ namespace rvarago::kitten {
     template <template <typename ...> typename AP, typename = void>
     struct applicative;
 
+    namespace detail {
+        template <template <typename ...> typename, typename = void>
+        struct is_applicative : std::false_type{};
+
+        template <template <typename ...> typename AP>
+        inline constexpr bool is_applicative_v = is_applicative<AP>::value;
+    }
+
     /**
      * Forwards to the applicative implementation.
      *
@@ -26,6 +34,7 @@ namespace rvarago::kitten {
      */
     template <typename BinaryFunction, template <typename ...> typename AP, typename A, typename B, typename... Rest>
     constexpr decltype(auto) combine(AP<A, Rest...> const& first, AP<B, Rest...> const& second, BinaryFunction f) {
+        static_assert(detail::is_applicative_v<AP>, "type constructor AP does not have an applicative instance");
         return applicative<AP>::combine(first, second, f);
     }
 
