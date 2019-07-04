@@ -29,6 +29,11 @@ namespace rvarago::kitten {
 
     };
 
+    namespace detail {
+        template <>
+        struct is_multifunctor<std::variant> : std::true_type{};
+    }
+
 }
 
 #endif
