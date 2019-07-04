@@ -15,6 +15,20 @@ namespace rvarago::kitten {
     }
 
     template <>
+    struct monad<std::variant> {
+
+        template <typename UnaryFunction, typename A, typename E>
+        static constexpr auto bind(std::variant<A, E> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
+            using ResultT = decltype(f(std::declval<A>()));
+            if (std::holds_alternative<E>(input)) {
+                return ResultT{std::get<E>(input)};
+            }
+            return f(std::get<A>(input));
+        }
+
+    };
+
+    template <>
     struct applicative<std::variant> {
 
         template <typename BinaryFunction, typename A, typename B, typename E>
@@ -33,20 +47,6 @@ namespace rvarago::kitten {
     };
 
     template <>
-    struct monad<std::variant> {
-
-        template <typename UnaryFunction, typename A, typename E>
-        static constexpr auto bind(std::variant<A, E> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
-            using ResultT = decltype(f(std::declval<A>()));
-            if (std::holds_alternative<E>(input)) {
-                return ResultT{std::get<E>(input)};
-            }
-            return f(std::get<A>(input));
-        }
-
-    };
-
-    template <>
     struct functor<std::variant> {
 
         template <typename UnaryFunction, typename A, typename E>
@@ -55,6 +55,11 @@ namespace rvarago::kitten {
         }
 
     };
+
+    namespace detail {
+        template <>
+        struct is_monad<std::variant> : std::true_type{};
+    }
 
 }
 
