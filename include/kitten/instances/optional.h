@@ -50,6 +50,9 @@ namespace rvarago::kitten {
         struct is_monad<std::optional> : std::true_type{};
 
         template <>
+        struct is_applicative<std::optional> : std::true_type{};
+
+        template <>
         struct is_functor<std::optional> : std::true_type{};
     }
 
