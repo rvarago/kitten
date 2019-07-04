@@ -12,6 +12,14 @@ namespace rvarago::kitten {
     template <template <typename ...> typename MF, typename = void>
     struct multifunctor;
 
+    namespace detail {
+        template <template <typename ...> typename, typename = void>
+        struct is_multifunctor : std::false_type{};
+
+        template <template <typename ...> typename MF>
+        inline constexpr bool is_multifunctor_v = is_multifunctor<MF>::value;
+    }
+
     /**
      * Forwards to the multifunctor implementation.
      *
@@ -21,6 +29,7 @@ namespace rvarago::kitten {
      */
     template <typename UnaryFunction, template <typename ...> typename MF, typename... Rest>
     constexpr decltype(auto) multimap(MF<Rest...> const& input, UnaryFunction f) {
+        static_assert(detail::is_multifunctor_v<MF>, "type constructor MF does not have a multifunctor instance");
         return multifunctor<MF>::multimap(input, f);
     }
 
