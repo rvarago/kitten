@@ -12,7 +12,7 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct monad<SequenceContainer> {
 
-        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
+        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto bind(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
             auto mapped_sequence = decltype(f(std::declval<A>())){};
             for (auto const& el : input) {
@@ -26,7 +26,7 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct applicative<SequenceContainer> {
 
-        template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
+        template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto combine(SequenceContainer<A, Rest...> const &first, SequenceContainer<B, Rest...> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
             using ValueT = decltype(f(std::declval<A>(), std::declval<B>()));
             auto combined_sequence = SequenceContainer<ValueT>{};
@@ -43,7 +43,7 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct functor<SequenceContainer> {
 
-        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer<A, Rest...>>>
+        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::traits::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto map(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
             return monad<SequenceContainer>::bind(input, [&f](auto const& v) { return SequenceContainer{f(v)}; });
         }
