@@ -36,7 +36,7 @@ dep: mk
 	cd build && conan install .. --build=missing -pr ${PROFILE}
 
 mk:
-	-mkdir build
+	mkdir -p build
 
 clean:
 	rm -rf build
