@@ -45,7 +45,7 @@ namespace rvarago::kitten {
 
     };
 
-    namespace detail {
+    namespace traits {
         template <>
         struct is_monad<std::optional> : std::true_type{};
 

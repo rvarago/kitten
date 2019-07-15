@@ -23,7 +23,7 @@ namespace rvarago::kitten {
     template <template <typename ...> typename M, typename = void>
     struct monad;
 
-    namespace detail {
+    namespace traits {
         template <template <typename ...> typename, typename = void>
         struct is_monad : std::false_type{};
 
@@ -40,7 +40,7 @@ namespace rvarago::kitten {
      */
     template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
     constexpr decltype(auto) bind(M<A, Rest...> const& input, UnaryFunction f) {
-        static_assert(detail::is_monad_v<M>, "type constructor M does not have a monad instance");
+        static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
         return monad<M>::bind(input, f);
     }
 

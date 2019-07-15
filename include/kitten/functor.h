@@ -17,7 +17,7 @@ namespace rvarago::kitten {
     template <template <typename ...> typename F, typename = void>
     struct functor;
 
-    namespace detail {
+    namespace traits {
         template <template <typename ...> typename, typename = void>
         struct is_functor : std::false_type{};
 
@@ -34,7 +34,7 @@ namespace rvarago::kitten {
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
     constexpr decltype(auto) map(F<A, Rest...> const& input, UnaryFunction f) {
-        static_assert(detail::is_functor_v<F>, "type constructor F does not have a functor instance");
+        static_assert(traits::is_functor_v<F>, "type constructor F does not have a functor instance");
         return functor<F>::map(input, f);
     }
 
