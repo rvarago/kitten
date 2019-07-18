@@ -14,10 +14,10 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A>
         static constexpr auto bind(std::optional<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
-            if (!input.has_value()) {
-                return {};
+            if (!input) {
+                return std::nullopt;
             }
-            return f(input.value());
+            return f(*input);
         }
 
     };
@@ -27,10 +27,10 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B>
         static constexpr auto combine(std::optional<A> const &first, std::optional<B> const& second, BinaryFunction f) -> std::optional<decltype(f(std::declval<A>(), std::declval<B>()))> {
-            if (!first.has_value() || !second.has_value()) {
-                return {};
+            if (!first || !second) {
+                return std::nullopt;
             }
-            return f(first.value(), second.value());
+            return f(*first, *second);
         }
 
     };
