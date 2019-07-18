@@ -46,31 +46,7 @@ namespace {
 
     }
 
-    TYPED_TEST(SequenceContainerTest, bind_should_returnEmpty_when_empty) {
-        using T  = typename TestFixture::type;
-
-        auto const empty = T{};
-        auto const mapped_empty = empty >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
-
-        EXPECT_TRUE(mapped_empty.empty());
-    }
-
-    TYPED_TEST(SequenceContainerTest, bind_should_returnMapped_when_notEmpty) {
-        using T  = typename TestFixture::type;
-
-        auto const container = T{1, 2};
-        auto const mapped_container = container >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
-
-        EXPECT_TRUE(!mapped_container.empty());
-        EXPECT_EQ(4, mapped_container.size());
-
-        EXPECT_EQ("10", value_at(mapped_container, 0));
-        EXPECT_EQ("100", value_at(mapped_container, 1));
-        EXPECT_EQ("20", value_at(mapped_container, 2));
-        EXPECT_EQ("200", value_at(mapped_container, 3));
-    }
-
-    TYPED_TEST(SequenceContainerTest, apply_should_returnEmpty_when_notEmpty) {
+    TYPED_TEST(SequenceContainerTest, combine_should_returnEmpty_when_notEmpty) {
         using T  = typename TestFixture::type;
         auto const empty = T{};
         auto const second_container = T{20, 30};
@@ -85,7 +61,7 @@ namespace {
         EXPECT_TRUE(product_as_string.empty());
     }
 
-    TYPED_TEST(SequenceContainerTest, apply_should_returnCombined_when_notEmpty) {
+    TYPED_TEST(SequenceContainerTest, combine_should_returnCombined_when_notEmpty) {
         using T  = typename TestFixture::type;
         auto const first_container = T{2, 3};
         auto const second_container = T{20, 30};
@@ -110,6 +86,30 @@ namespace {
         EXPECT_EQ("60", value_at(product_as_string, 1));
         EXPECT_EQ("60", value_at(product_as_string, 2));
         EXPECT_EQ("90", value_at(product_as_string, 3));
+    }
+
+    TYPED_TEST(SequenceContainerTest, bind_should_returnEmpty_when_empty) {
+        using T  = typename TestFixture::type;
+
+        auto const empty = T{};
+        auto const mapped_empty = empty >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
+
+        EXPECT_TRUE(mapped_empty.empty());
+    }
+
+    TYPED_TEST(SequenceContainerTest, bind_should_returnMapped_when_notEmpty) {
+        using T  = typename TestFixture::type;
+
+        auto const container = T{1, 2};
+        auto const mapped_container = container >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
+
+        EXPECT_TRUE(!mapped_container.empty());
+        EXPECT_EQ(4, mapped_container.size());
+
+        EXPECT_EQ("10", value_at(mapped_container, 0));
+        EXPECT_EQ("100", value_at(mapped_container, 1));
+        EXPECT_EQ("20", value_at(mapped_container, 2));
+        EXPECT_EQ("200", value_at(mapped_container, 3));
     }
 
 }

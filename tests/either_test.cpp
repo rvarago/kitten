@@ -35,27 +35,7 @@ namespace {
         EXPECT_EQ("10", std::get<std::string>(mapped_value));
     }
 
-    TEST(either, bind_should_returnEmpty_when_empty) {
-        auto const error = types::either<int, error_t>{error_t{-1}};
-        auto const mapped_error = error >> [](auto v){ return types::either<std::string, error_t>{std::to_string(v * 10)}; };
-
-        static_assert(is_same_after_decaying<types::either<std::string, error_t>, decltype(mapped_error)>);
-
-        EXPECT_TRUE(std::holds_alternative<error_t>(mapped_error));
-        EXPECT_EQ(-1, std::get<error_t>(mapped_error).code);
-    }
-
-    TEST(either, bind_should_returnMapped_when_notEmpty) {
-        auto const value_one = types::either<int, error_t>{1};
-        auto const mapped_value = value_one >> [](auto v){ return types::either<std::string, error_t>{std::to_string(v * 10)}; };
-
-        static_assert(is_same_after_decaying<types::either<std::string, error_t>, decltype(mapped_value)>);
-
-        EXPECT_TRUE(std::holds_alternative<std::string>(mapped_value));
-        EXPECT_EQ("10", std::get<std::string>(mapped_value));
-    }
-
-    TEST(either, apply_should_returnEmpty_when_empty) {
+    TEST(either, combine_should_returnEmpty_when_empty) {
         auto const error = types::either<int, error_t>{error_t{-1}};
         auto const some_three = types::either<int, error_t>{3};
 
@@ -74,7 +54,7 @@ namespace {
         EXPECT_EQ(-1, std::get<error_t>(product_as_string).code);
     }
 
-    TEST(either, apply_should_returnCombined_when_notEmpty) {
+    TEST(either, combine_should_returnCombined_when_notEmpty) {
         auto const some_two = types::either<int, error_t>{2};
         auto const some_three = types::either<int, error_t>{3};
 
@@ -92,6 +72,26 @@ namespace {
 
         EXPECT_TRUE(std::holds_alternative<std::string>(product_as_string));
         EXPECT_EQ("6", std::get<std::string>(product_as_string));
+    }
+
+    TEST(either, bind_should_returnEmpty_when_empty) {
+        auto const error = types::either<int, error_t>{error_t{-1}};
+        auto const mapped_error = error >> [](auto v){ return types::either<std::string, error_t>{std::to_string(v * 10)}; };
+
+        static_assert(is_same_after_decaying<types::either<std::string, error_t>, decltype(mapped_error)>);
+
+        EXPECT_TRUE(std::holds_alternative<error_t>(mapped_error));
+        EXPECT_EQ(-1, std::get<error_t>(mapped_error).code);
+    }
+
+    TEST(either, bind_should_returnMapped_when_notEmpty) {
+        auto const value_one = types::either<int, error_t>{1};
+        auto const mapped_value = value_one >> [](auto v){ return types::either<std::string, error_t>{std::to_string(v * 10)}; };
+
+        static_assert(is_same_after_decaying<types::either<std::string, error_t>, decltype(mapped_value)>);
+
+        EXPECT_TRUE(std::holds_alternative<std::string>(mapped_value));
+        EXPECT_EQ("10", std::get<std::string>(mapped_value));
     }
 
 }
