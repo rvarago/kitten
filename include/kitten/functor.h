@@ -11,8 +11,8 @@ namespace rvarago::kitten {
      *
      * Laws:
      *
-     * - Identity: map (f . g)  ==  map f . map g
-     * - Composition: map id = id
+     * - Identity: fmap (f . g)  ==  fmap f . fmap g
+     * - Composition: fmap id = id
      */
     template <template <typename ...> typename F, typename = void>
     struct functor;
@@ -33,17 +33,17 @@ namespace rvarago::kitten {
      * @return a new functor fb: F[B] resulting from applying f over the wrapped value inside fa
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
-    constexpr decltype(auto) map(F<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) fmap(F<A, Rest...> const& input, UnaryFunction f) {
         static_assert(traits::is_functor_v<F>, "type constructor F does not have a functor instance");
-        return functor<F>::map(input, f);
+        return functor<F>::fmap(input, f);
     }
 
     /**
-     * Infix version of map.
+     * Infix version of fmap.
      */
     template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
     constexpr decltype(auto) operator|(F<A, Rest...> const& input, UnaryFunction f) {
-        return map(input, f);
+        return fmap(input, f);
     }
 }
 
