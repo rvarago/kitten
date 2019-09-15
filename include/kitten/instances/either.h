@@ -50,7 +50,7 @@ namespace rvarago::kitten {
     struct functor<std::variant> {
 
         template <typename UnaryFunction, typename A, typename E>
-        static constexpr auto map(std::variant<A, E> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<A>())), E> {
+        static constexpr auto fmap(std::variant<A, E> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<A>())), E> {
             return monad<std::variant>::bind(input, [&f](auto const& value){ return std::variant<decltype(f(std::declval<A>())), E>{f(value)}; });
         }
 

@@ -68,7 +68,7 @@ namespace rvarago::kitten {
     struct functor<SequenceContainer> {
 
         template <typename UnaryFunction, typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto map(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
+        static constexpr auto fmap(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
             return monad<SequenceContainer>::bind(input, [&f](auto const& v) { return SequenceContainer{f(v)}; });
         }
 
