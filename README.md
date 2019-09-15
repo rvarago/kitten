@@ -243,9 +243,10 @@ returns `either<B, E>`.
 * Conan
 * Docker
 
-Note that Docker is only required if you want to run the tests inside a container. In that case, you just need to have Make,
-since all the other requirements are shipped inside the docker image. Therefore for quick exploration and collaboration,
+### Notes
 
+- Make is only required if you want to use it to orchestrate task execution, for instance to invoke Conan, CMake, etc.
+- Docker is only required if you want to run the tests inside a container.
 
 ## Build
 
