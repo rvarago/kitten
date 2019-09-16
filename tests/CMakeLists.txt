@@ -15,11 +15,13 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU|Clang")
             PRIVATE
                 -Wall -Wextra -Werror -ansi -pedantic
     )
-else()
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "MSVC")
     target_compile_options(${PROJECT_NAME}
             PRIVATE
                 /Wall /W4
     )
+else()
+    message("Unknown compiler..skipping configuration for warnings")
 endif()
 
 target_include_directories(${PROJECT_NAME}
