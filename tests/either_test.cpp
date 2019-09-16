@@ -5,10 +5,10 @@
 
 #include "utils.h"
 
-using namespace rvarago::kitten;
-using test::utils::is_same_after_decaying;
-
 namespace {
+
+    using namespace rvarago::kitten;
+    using test::utils::is_same_after_decaying;
 
     struct error_t final {
         explicit error_t(int _code) : code{_code} {}

@@ -4,9 +4,9 @@
 #include <string>
 #include <kitten/instances/sequence_container.h>
 
-using namespace rvarago::kitten;
-
 namespace {
+
+    using namespace rvarago::kitten;
 
     template <typename SequenceContainer, typename Index>
     decltype(auto) value_at(SequenceContainer const &container, Index index) {
