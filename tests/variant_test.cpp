@@ -18,7 +18,7 @@ namespace {
         int const code;
     };
 
-    TEST(variant, mapn_should_returnEmpty_when_empty) {
+    TEST(variant, multimap_should_returnEmpty_when_empty) {
         auto const error = std::variant<int, std::string, error_t>{error_t{-1}};
         auto const mapped_error = error || syntax::overloaded {
                 [](int v) { return std::optional{v * 10}; },
@@ -32,9 +32,9 @@ namespace {
         EXPECT_EQ(-2, std::get<error_t>(mapped_error).code);
     }
 
-    TEST(variant, mapn_should_returnMapped_when_notEmpty) {
+    TEST(variant, multimap_should_returnMapped_when_notEmpty) {
         auto const integer = std::variant<int, std::string, error_t>{1};
-        auto const mapped_optional_of_integer = integer|| syntax::overloaded {
+        auto const mapped_optional_of_integer = integer || syntax::overloaded {
                 [](int v) { return std::optional{v * 10}; },
                 [](auto v) { return v; }
         };
