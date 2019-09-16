@@ -5,10 +5,10 @@
 
 #include "utils.h"
 
-using namespace rvarago::kitten;
-using test::utils::is_same_after_decaying;
-
 namespace {
+
+    using namespace rvarago::kitten;
+    using test::utils::is_same_after_decaying;
 
     TEST(optional, map_should_returnEmpty_when_empty) {
         auto const none = std::optional<int>{};
