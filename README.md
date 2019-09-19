@@ -251,7 +251,8 @@ returns `either<B, E>`.
 ## Build
 
 The _Makefile_ wraps the commands to download dependencies (Conan), generate the build configuration, build, run the
-unit tests, and clear the build folder.
+unit tests, and clear the build folder. Please consult the Makefile to adapt
+the commands in case you want to build _absent_ directly without using make.
 
 * Compile (by default, it also compiles the unit tests):
 
@@ -271,6 +272,12 @@ can specify your profile by setting _PROFILE_ as:
 
 ``
 make PROFILE=<path_to_your_profile>
+``
+
+And to build with Release mode (by default it builds with Debug mode enabled):
+
+``
+make BUILD_TYPE=Release
 ``
 
 * To run the unit tests:
