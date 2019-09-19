@@ -254,7 +254,7 @@ The _Makefile_ wraps the commands to download dependencies (Conan), generate the
 unit tests, and clear the build folder. Please consult the Makefile to adapt
 the commands in case you want to build _absent_ directly without using make.
 
-* Compile (by default, it also compiles the unit tests):
+* Compile:
 
 ``
 make
@@ -263,7 +263,7 @@ make
 By default, it also builds the unit tests, you can disable the behavior by:
 
 ``
-make WITH_TESTS=false
+make BUILD_TESTS=OFF
 ``
 
 
@@ -280,7 +280,7 @@ And to build with Release mode (by default it builds with Debug mode enabled):
 make BUILD_TYPE=Release
 ``
 
-* To run the unit tests:
+* To run the unit tests, if previously compiled:
 
 ``
 make test
