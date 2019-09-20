@@ -17,7 +17,7 @@ env-test: env
 	docker run --rm ${PROJECT_NAME} make compile test --no-print-directory
 
 env-conan-package: env
-	docker run --rm ${PROJECT_NAME} make compile conan-package BUILD_TESTS=${BUILD_TESTS} PACKAGE_VERSION=${PACKAGE_VERSION} --no-print-directory
+	docker run --rm ${PROJECT_NAME} make compile conan-package BUILD_TYPE=${BUILD_TYPE} BUILD_TESTS=${BUILD_TESTS} PACKAGE_VERSION=${PACKAGE_VERSION} --no-print-directory
 
 install:
 	cd ${BUILD_DIR} && cmake --build . --target install

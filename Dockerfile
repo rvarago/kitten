@@ -6,4 +6,4 @@ WORKDIR kitten
 
 COPY . .
 
-CMD ["make", "--no-print-directory"]
+CMD ["/bin/bash"]
