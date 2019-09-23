@@ -11,8 +11,8 @@ class KittenConan(ConanFile):
     url         = homepage
     exports 	= ["README.md", "LICENSE"]
 
-    requires    = "gtest/1.8.0@bincrafters/stable"
-    generators  = "cmake_find_package"
+    build_requires  = "gtest/1.8.0@bincrafters/stable"
+    generators      = "cmake_find_package"
 
     exports_sources = "include/*"
     no_copy_source = True
