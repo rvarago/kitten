@@ -222,18 +222,26 @@ Note that it's possible that a type may not admit instances for all the structur
 
 The following types are currently supported:
 
-|         Type         | Functor | Applicative | Monad | Multi-functor |
-|:--------------------:|:-------:|-------------|-------|:-------------:|
-|    `either<A, E>`    |    x    |     x       | x     |               |
-|  `std::optional<T>`  |    x    |     x       | x     |               |
-|    `std::deque<T>`   |    x    |     x       | x     |               |
-|    `std::list<T>`    |    x    |     x       | x     |               |
-| `std::variant<T...>` |         |             |       |       x       |
-|   `std::vector<T>`   |    x    |     x       |       |               |
+|         Type                      | Functor | Applicative | Monad   | Multi-functor |
+|:---------------------------------:|:-------:|-------------|---------|:-------------:|
+| `types::either<A, E>`             |    x    |     x       |   x     |               |
+| `types::function_wrapper<F>`      |    x    |             |         |               |
+| `std::optional<T>`                |    x    |     x       |   x     |               |
+| `std::deque<T>`                   |    x    |     x       |   x     |               |
+| `std::list<T>`                    |    x    |     x       |   x     |               |
+| `std::variant<T...>`              |         |             |         |       x       |
+| `std::vector<T>`                  |    x    |     x       |         |               |
 
-- `either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
+- `types::either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
 happens for the left type parameter `A`. For instance `fmap` receives a function `f: A -> B` and then
-returns `either<B, E>`.
+returns `types::either<B, E>`.
+- `types::function_wrapper<F>` is a callable wrapper around a function-like type, e.g. function, function object, etc.
+And it allows using `fmap` to compose functions, e.g. given `fx : A -> B` and
+`fy: B -> C`, and both wrapped around `types::function_wrapper` which can conveniently be done
+by the helper function `types::fn`, then `fmap(fx, fy)` returns a new `types::function_wrapper`
+ `fz: A -> C` that applies `fx` and then `fy`. So, by providing an argument
+ `x` of type `A`, we have: `fmap(fx, fy)(x) == fy(fx(x))`.
+
 
 ## Requirements
 
