@@ -13,7 +13,7 @@ namespace rvarago::kitten {
         class function_wrapper {
             Function const f;
         public:
-            explicit constexpr function_wrapper(Function const invokable) noexcept : f{invokable} {}
+            explicit constexpr function_wrapper(Function invokable) noexcept : f{std::move(invokable)} {}
 
             template <typename... Args>
             constexpr auto operator()(Args&&... args) const noexcept -> decltype(f(std::forward<Args>(args)...)) {
@@ -22,8 +22,8 @@ namespace rvarago::kitten {
         };
 
         template <typename Function>
-        constexpr function_wrapper<Function> fn(Function const invokable) {
-            return function_wrapper{invokable};
+        constexpr function_wrapper<Function> fn(Function invokable) {
+            return function_wrapper{std::move(invokable)};
         }
 
     }
