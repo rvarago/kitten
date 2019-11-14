@@ -7,6 +7,9 @@
 #include "kitten/functor.h"
 #include "kitten/monad.h"
 
+#include "kitten/detail/deriving/from_monad/derive_applicative.h"
+#include "kitten/detail/deriving/from_monad/derive_functor.h"
+
 namespace rvarago::kitten {
 
     template <>
@@ -32,12 +35,7 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B>
         static constexpr auto combine(std::optional<A> const &first, std::optional<B> const& second, BinaryFunction f) -> std::optional<decltype(f(std::declval<A>(), std::declval<B>()))> {
-            using MonadT = monad<std::optional>;
-            return MonadT::bind(first, [&second, &f](auto const& first_value) {
-                return MonadT::bind(second, [&first_value, &f](auto const& second_value) {
-                    return MonadT::wrap(f(first_value, second_value));
-                });
-            });
+            return detail::deriving::combine(first, second, f);
         }
 
     };
@@ -47,8 +45,7 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A>
         static constexpr auto fmap(std::optional<A> const &input, UnaryFunction f) -> std::optional<decltype(f(std::declval<A>()))> {
-            using MonadT = monad<std::optional>;
-            return MonadT::bind(input, [&f](auto const& value){ return MonadT::wrap(f(value)); });
+            return detail::deriving::fmap(input, f);
         }
 
     };

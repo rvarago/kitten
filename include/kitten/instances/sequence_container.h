@@ -9,6 +9,10 @@
 #include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
+
+#include "kitten/detail/deriving/from_monad/derive_applicative.h"
+#include "kitten/detail/deriving/from_monad/derive_functor.h"
+
 #include "kitten/ranges/algorithm.h"
 
 namespace rvarago::kitten {
@@ -57,12 +61,7 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto combine(SequenceContainer<A, Rest...> const &first, SequenceContainer<B, Rest...> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
-            using MonadT = monad<SequenceContainer>;
-            return MonadT::bind(first, [&second, &f](auto const& first_value) {
-                return MonadT::bind(second, [&first_value, &f](auto const& second_value) {
-                    return MonadT::wrap(f(first_value, second_value));
-                });
-            });
+            return detail::deriving::combine(first, second, f);
         }
 
     };
@@ -72,8 +71,7 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto fmap(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
-            using MonadT = monad<SequenceContainer>;
-            return MonadT::bind(input, [&f](auto const& v) { return MonadT::wrap(f(v)); });
+            return detail::deriving::fmap(input, f);
         }
 
     };
