@@ -38,15 +38,13 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B, typename E>
         static constexpr auto combine(std::variant<A, E> const &first, std::variant<B, E> const& second, BinaryFunction f) -> std::variant<decltype(f(std::declval<A>(), std::declval<B>())), E> {
-            if (std::holds_alternative<A>(first) && std::holds_alternative<B>(second)) {
-                return f(std::get<A>(first), std::get<B>(second));
-            }
-
-            if (std::holds_alternative<E>(first)) {
-                return std::get<E>(first);
-            }
-
-            return std::get<E>(second);
+            using MonadT = monad<std::variant>;
+            return MonadT::bind(first, [&second, &f](auto const& first_value) {
+                return MonadT::bind(second, [&first_value, &f](auto const& second_value) {
+                    using ValueT = decltype(f(std::declval<A>(), std::declval<B>()));
+                    return MonadT::wrap<ValueT, E>(f(first_value, second_value));
+                });
+            });
         }
 
     };
@@ -57,7 +55,10 @@ namespace rvarago::kitten {
         template <typename UnaryFunction, typename A, typename E>
         static constexpr auto fmap(std::variant<A, E> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<A>())), E> {
             using MonadT = monad<std::variant>;
-            return MonadT::bind(input, [&f](auto const& value){ return MonadT::wrap<decltype(f(std::declval<A>())), E>(f(value)); });
+            return MonadT::bind(input, [&f](auto const& value){
+                using ValueT = decltype(f(std::declval<A>()));
+                return MonadT::wrap<ValueT, E>(f(value));
+            });
         }
 
     };
