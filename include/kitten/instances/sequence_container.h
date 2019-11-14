@@ -57,14 +57,12 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto combine(SequenceContainer<A, Rest...> const &first, SequenceContainer<B, Rest...> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
-            using ValueT = decltype(f(std::declval<A>(), std::declval<B>()));
-            auto combined_sequence = SequenceContainer<ValueT>{};
-            for (auto const& first_element : first) {
-                for (auto const& second_element: second) {
-                    combined_sequence.push_back(f(first_element, second_element));
-                }
-            }
-            return combined_sequence;
+            using MonadT = monad<SequenceContainer>;
+            return MonadT::bind(first, [&second, &f](auto const& first_value) {
+                return MonadT::bind(second, [&first_value, &f](auto const& second_value) {
+                    return MonadT::wrap(f(first_value, second_value));
+                });
+            });
         }
 
     };

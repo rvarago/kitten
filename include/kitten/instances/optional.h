@@ -32,10 +32,12 @@ namespace rvarago::kitten {
 
         template <typename BinaryFunction, typename A, typename B>
         static constexpr auto combine(std::optional<A> const &first, std::optional<B> const& second, BinaryFunction f) -> std::optional<decltype(f(std::declval<A>(), std::declval<B>()))> {
-            if (!first || !second) {
-                return std::nullopt;
-            }
-            return f(*first, *second);
+            using MonadT = monad<std::optional>;
+            return MonadT::bind(first, [&second, &f](auto const& first_value) {
+                return MonadT::bind(second, [&first_value, &f](auto const& second_value) {
+                    return MonadT::wrap(f(first_value, second_value));
+                });
+            });
         }
 
     };
