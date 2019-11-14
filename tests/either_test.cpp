@@ -74,6 +74,15 @@ namespace {
         EXPECT_EQ("6", std::get<std::string>(product_as_string));
     }
 
+    TEST(either, wrap_should_returnANonEmptyMonad) {
+        auto const value_one = wrap<std::variant, int, error_t>(1);
+
+        static_assert(is_same_after_decaying<types::either<int, error_t>, decltype(value_one)>);
+
+        EXPECT_TRUE(std::holds_alternative<int>(value_one));
+        EXPECT_EQ(1, std::get<int>(value_one));
+    }
+
     TEST(either, bind_should_returnEmpty_when_empty) {
         auto const error = types::either<int, error_t>{error_t{-1}};
         auto const mapped_error = error >> [](auto v){ return types::either<std::string, error_t>{std::to_string(v * 10)}; };

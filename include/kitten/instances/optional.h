@@ -20,6 +20,11 @@ namespace rvarago::kitten {
             return f(*input);
         }
 
+        template <typename A>
+        static constexpr auto wrap(A&& value) -> std::optional<A> {
+            return std::make_optional(std::forward<A>(value));
+        }
+
     };
 
     template <>
@@ -40,7 +45,8 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A>
         static constexpr auto fmap(std::optional<A> const &input, UnaryFunction f) -> std::optional<decltype(f(std::declval<A>()))> {
-            return monad<std::optional>::bind(input, [&f](auto const& value){ return std::optional{f(value)}; });
+            using MonadT = monad<std::optional>;
+            return MonadT::bind(input, [&f](auto const& value){ return MonadT::wrap(f(value)); });
         }
 
     };

@@ -162,6 +162,9 @@ Hence, we can do:
 
 `bind(f(), g)`
 
+In addition, a monad also has a function `wrap(A): X<A>` that allows one to lift a value
+of type `A` into a monad `X<A>`.
+
 Using _kitten_, one example of using a monad is:
 
 ```
