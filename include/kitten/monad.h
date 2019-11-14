@@ -32,6 +32,19 @@ namespace rvarago::kitten {
     }
 
     /**
+     * Lifts a value of type A into a monad M[A].
+     *
+     * @param value the type parameter that defines the type of the element wrapped by the monad
+     * @param tail eventual remaining type parameters used by the monad, considered as implementation detail
+     * @return a new monad m: M[A] that wraps the contained value of type A
+     */
+    template <template <typename ...> typename M, typename A, typename... Rest>
+    constexpr decltype(auto) wrap(A&& value) {
+        static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
+        return monad<M>::template wrap<A, Rest...>(std::forward<A>(value));
+    }
+
+    /**
      * Forwards to the monad implementation.
      *
      * @param input a monad ma: M[A]

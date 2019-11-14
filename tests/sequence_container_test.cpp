@@ -18,6 +18,7 @@ namespace {
         using type = T;
     };
 
+    // TODO: Generalize the tests to support template template parameter
     using sequence_containers = ::testing::Types<std::deque<int>, std::list<int>, std::vector<int>>;
 
     TYPED_TEST_CASE(SequenceContainerTest, sequence_containers);
@@ -86,6 +87,28 @@ namespace {
         EXPECT_EQ("60", value_at(product_as_string, 1));
         EXPECT_EQ("60", value_at(product_as_string, 2));
         EXPECT_EQ("90", value_at(product_as_string, 3));
+    }
+
+    TEST(deque, wrap_should_returnANonEmptyMonad) {
+        // FIXME: Test for all the other containers
+        auto const singleton = wrap<std::deque>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
+    }
+
+    TEST(vector, wrap_should_returnANonEmptyMonad) {
+        auto const singleton = wrap<std::vector>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
+    }
+
+    TEST(list, wrap_should_returnANonEmptyMonad) {
+        auto const singleton = wrap<std::list>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
     }
 
     TYPED_TEST(SequenceContainerTest, bind_should_returnEmpty_when_empty) {

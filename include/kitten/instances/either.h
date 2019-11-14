@@ -26,6 +26,11 @@ namespace rvarago::kitten {
             return f(std::get<A>(input));
         }
 
+        template <typename A, typename E>
+        static constexpr auto wrap(A&& value) -> std::variant<A, E> {
+            return std::variant<A, E>(std::forward<A>(value));
+        }
+
     };
 
     template <>
@@ -51,7 +56,8 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A, typename E>
         static constexpr auto fmap(std::variant<A, E> const &input, UnaryFunction f) -> std::variant<decltype(f(std::declval<A>())), E> {
-            return monad<std::variant>::bind(input, [&f](auto const& value){ return std::variant<decltype(f(std::declval<A>())), E>{f(value)}; });
+            using MonadT = monad<std::variant>;
+            return MonadT::bind(input, [&f](auto const& value){ return MonadT::wrap<decltype(f(std::declval<A>())), E>(f(value)); });
         }
 
     };

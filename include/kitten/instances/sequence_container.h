@@ -45,6 +45,11 @@ namespace rvarago::kitten {
             return mapped_sequence;
         }
 
+        template <typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto wrap(A&& value, Rest&&... tail) -> SequenceContainer<A, Rest...> {
+            return SequenceContainer<A, Rest...>{std::forward<A>(value), std::forward<Rest>(tail)...};
+        }
+
     };
 
     template <template <typename...> typename SequenceContainer>
@@ -69,7 +74,8 @@ namespace rvarago::kitten {
 
         template <typename UnaryFunction, typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
         static constexpr auto fmap(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
-            return monad<SequenceContainer>::bind(input, [&f](auto const& v) { return SequenceContainer{f(v)}; });
+            using MonadT = monad<SequenceContainer>;
+            return MonadT::bind(input, [&f](auto const& v) { return MonadT::wrap(f(v)); });
         }
 
     };
