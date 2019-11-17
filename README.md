@@ -227,7 +227,6 @@ The following types are currently supported:
 
 |         Type                      | Functor | Applicative | Monad   | Multi-functor |
 |:---------------------------------:|:-------:|-------------|---------|:-------------:|
-| `types::either<A, E>`             |    x    |     x       |   x     |               |
 | `types::function_wrapper<F>`      |    x    |             |         |               |
 | `std::optional<T>`                |    x    |     x       |   x     |               |
 | `std::deque<T>`                   |    x    |     x       |   x     |               |
@@ -235,9 +234,6 @@ The following types are currently supported:
 | `std::variant<T...>`              |         |             |         |       x       |
 | `std::vector<T>`                  |    x    |     x       |         |               |
 
-- `types::either<A, E>` is a *left-biased* alias for `std::variant<A, E>`. And by left-biased, I mean that the mapping only
-happens for the left type parameter `A`. For instance `fmap` receives a function `f: A -> B` and then
-returns `types::either<B, E>`.
 - `types::function_wrapper<F>` is a callable wrapper around a function-like type, e.g. function, function object, etc.
 And it allows using `fmap` to compose functions, e.g. given `fx : A -> B` and
 `fy: B -> C`, and both wrapped around `types::function_wrapper` which can conveniently be done

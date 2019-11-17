@@ -3,7 +3,6 @@ project(kitten_tests LANGUAGES CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 
 add_executable(${PROJECT_NAME}
-        either_test.cpp
         function_test.cpp
         optional_test.cpp
         main.cpp
