@@ -13,7 +13,7 @@
 #include "kitten/detail/deriving/from_monad/derive_applicative.h"
 #include "kitten/detail/deriving/from_monad/derive_functor.h"
 
-#include "kitten/ranges/algorithm.h"
+#include "kitten/detail/ranges/algorithm.h"
 
 namespace rvarago::kitten {
 
@@ -44,7 +44,7 @@ namespace rvarago::kitten {
         static constexpr auto bind(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
             auto mapped_sequence = decltype(f(std::declval<A>())){};
             for (auto const& el : input) {
-                ranges::copy(f(el), std::back_inserter(mapped_sequence));
+                detail::ranges::copy(f(el), std::back_inserter(mapped_sequence));
             }
             return mapped_sequence;
         }
