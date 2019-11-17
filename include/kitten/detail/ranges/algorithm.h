@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-namespace rvarago::kitten::ranges {
+namespace rvarago::kitten::detail::ranges {
 
     // TODO: Use standard ranges
     template <typename Range, typename OutIterator>
