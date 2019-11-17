@@ -29,6 +29,15 @@ namespace {
         EXPECT_EQ("10", mapped_some.value());
     }
 
+    TEST(optional, pure_should_returnANonEmptyApplicative) {
+        auto const some_one = pure<std::optional>(1);
+
+        static_assert(is_same_after_decaying<std::optional<int>, decltype(some_one)>);
+
+        EXPECT_TRUE(some_one.has_value());
+        EXPECT_EQ(1, some_one.value());
+    }
+
     TEST(optional, combine_should_returnEmpty_when_empty) {
         auto const none = std::optional<int>{};
         auto const some_three= std::optional<int>{3};

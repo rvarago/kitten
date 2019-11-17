@@ -25,6 +25,19 @@ namespace rvarago::kitten {
     }
 
     /**
+     * Lifts a value of type A into an applicative AP[A].
+     *
+     * @param value the type parameter that defines the type of the element wrapped by the applicative
+     * @param tail eventual remaining type parameters used by the applicative, considered as implementation detail
+     * @return a new monad m: AP[A] that wraps the contained value of type A
+     */
+    template <template <typename ...> typename AP, typename A, typename... Rest>
+    constexpr decltype(auto) pure(A&& value) {
+        static_assert(traits::is_applicative_v<AP>, "type constructor M does not have an applicative instance");
+        return applicative<AP>::template pure<A, Rest...>(std::forward<A>(value));
+    }
+
+    /**
      * Forwards to the applicative implementation.
      *
      * @param first an applicative apa1: AP[A]

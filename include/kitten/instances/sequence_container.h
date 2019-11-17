@@ -64,6 +64,11 @@ namespace rvarago::kitten {
             return detail::deriving::combine(first, second, f);
         }
 
+        template <typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto pure(A&& value, Rest&&... tail) -> SequenceContainer<A, Rest...> {
+            return detail::deriving::wrap<SequenceContainer>(std::forward<A>(value), std::forward<Rest>(tail)...);
+        }
+
     };
 
     template <template <typename...> typename SequenceContainer>

@@ -106,6 +106,9 @@ Hence, we can do:
 
 `combine(xa, xb, f)`
 
+In addition, an applicative also has a function `pure(A): X<A>` that allows one to lift a value
+of type `A` into an applicative `X<A>`.
+
 Using _kitten_, one example of using an applicative is:
 
 ```
