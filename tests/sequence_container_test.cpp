@@ -47,6 +47,29 @@ namespace {
 
     }
 
+    TEST(deque, pure_should_returnANonEmptyApplicative) {
+        // FIXME: Test for all the other containers
+        auto const singleton = pure<std::deque>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
+    }
+
+    TEST(vector, pure_should_returnANonEmptyApplicative) {
+        auto const singleton = pure<std::vector>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
+    }
+
+    TEST(list, pure_should_returnANonEmptyApplicative) {
+        auto const singleton = pure<std::list>(1);
+
+        EXPECT_TRUE(!singleton.empty());
+        EXPECT_EQ(1, value_at(singleton, 0));
+    }
+
+
     TYPED_TEST(SequenceContainerTest, combine_should_returnEmpty_when_notEmpty) {
         using T  = typename TestFixture::type;
         auto const empty = T{};

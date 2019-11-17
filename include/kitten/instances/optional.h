@@ -38,6 +38,11 @@ namespace rvarago::kitten {
             return detail::deriving::combine(first, second, f);
         }
 
+        template <typename A>
+        static constexpr auto pure(A&& value) -> std::optional<A> {
+            return detail::deriving::wrap<std::optional>(std::forward<A>(value));
+        }
+
     };
 
     template <>

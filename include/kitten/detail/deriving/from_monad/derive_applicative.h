@@ -16,6 +16,12 @@ namespace rvarago::kitten::detail::deriving {
         });
     }
 
+    template <template <typename ...> typename M, typename A, typename... Rest>
+    constexpr auto wrap(A&& value) -> M<A, Rest...> {
+        using MonadT = monad<M>;
+        return MonadT::wrap(std::forward<A>(value));
+    }
+
 }
 
 #endif
