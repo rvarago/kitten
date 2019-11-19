@@ -138,7 +138,7 @@ namespace {
         using T  = typename TestFixture::type;
 
         auto const empty = T{};
-        auto const mapped_empty = empty >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
+        auto const mapped_empty = empty >>= [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
 
         EXPECT_TRUE(mapped_empty.empty());
     }
@@ -147,7 +147,7 @@ namespace {
         using T  = typename TestFixture::type;
 
         auto const container = T{1, 2};
-        auto const mapped_container = container >> [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
+        auto const mapped_container = container >>= [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
 
         EXPECT_TRUE(!mapped_container.empty());
         EXPECT_EQ(4, mapped_container.size());
