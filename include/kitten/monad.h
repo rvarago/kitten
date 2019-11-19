@@ -61,7 +61,7 @@ namespace rvarago::kitten {
      * Infix version of bind.
      */
     template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
-    constexpr decltype(auto) operator>>(M<A, Rest...> const& input, UnaryFunction f) {
+    constexpr decltype(auto) operator>>=(M<A, Rest...> const& input, UnaryFunction f) {
         return bind(input, f);
     }
 

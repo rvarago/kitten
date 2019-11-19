@@ -83,7 +83,7 @@ namespace {
 
     TEST(optional, bind_should_returnEmpty_when_empty) {
         auto const none = std::optional<int>{};
-        auto const mapped_none = none >> [](auto v){ return std::optional{std::to_string(v * 10)}; };
+        auto const mapped_none = none >>= [](auto v){ return std::optional{std::to_string(v * 10)}; };
 
         static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_none)>);
 
@@ -92,7 +92,7 @@ namespace {
 
     TEST(optional, bind_should_returnMapped_when_notEmpty) {
         auto const some_one = std::optional<int>{1};
-        auto const mapped_some = some_one >> [](auto v){ return std::optional{std::to_string(v * 10)}; };
+        auto const mapped_some = some_one >>= [](auto v){ return std::optional{std::to_string(v * 10)}; };
 
         static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_some)>);
 
