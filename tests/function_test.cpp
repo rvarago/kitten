@@ -1,34 +1,43 @@
-#include <gtest/gtest.h>
+#include <catch2/catch.hpp>
 
 #include <string>
 #include <kitten/instances/function.h>
 
 namespace {
 
-    using namespace rvarago::kitten;
-
     using namespace std::string_literals;
+
     using namespace rvarago::kitten;
-    using namespace rvarago::kitten::types;
+    using namespace types;
 
-    char void_to_char() {
-        return 'x';
-    }
+    SCENARIO("function_wrapper admits a functor instance", "[function_wrapper]") {
 
-    int char_to_int(char) {
-        return 42;
-    }
+        GIVEN("a function from double to int") {
 
-    std::string int_to_string(int) {
-        return "10"s;
-    }
+            auto double_to_int = [](double v) -> int {
+                return static_cast<int>(v);
+            };
 
-    TEST(function, map_should_returnTheFunctionsComposition) {
-        auto const char_to_string = fn(char_to_int) | fn(int_to_string);
-        auto const void_to_string = fn(void_to_char) | fn(char_to_int) | fn(int_to_string);
+            AND_GIVEN("a function from int to string") {
 
-        EXPECT_EQ("10"s, char_to_string('x'));
-        EXPECT_EQ("10"s, void_to_string());
+                auto int_to_string = [](int v) -> std::string {
+                    return std::to_string(v);
+                };
+
+                WHEN("they are wrapped in function wrappers") {
+
+                    AND_WHEN("composed together") {
+
+                        THEN("return the composition of a function wrapper from double to string") {
+
+                            auto const double_to_string = fn(double_to_int) | fn(int_to_string);
+
+                            CHECK(double_to_string(3.14) == "3"s);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

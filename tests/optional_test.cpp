@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include <catch2/catch.hpp>
 
 #include <string>
 #include <kitten/instances/optional.h>
@@ -7,97 +7,156 @@
 
 namespace {
 
+    using namespace std::string_literals;
+
     using namespace rvarago::kitten;
     using test::utils::is_same_after_decaying;
 
-    TEST(optional, map_should_returnEmpty_when_empty) {
-        auto const none = std::optional<int>{};
-        auto const mapped_none = none | [](auto v){ return std::to_string(v * 10); };
+    SCENARIO("optional admits functor, applicative, and monad instances", "[optional]") {
 
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_none)>);
+        GIVEN("An optional") {
 
-        EXPECT_TRUE(!mapped_none.has_value());
+            AND_GIVEN("a functor instance") {
+
+                AND_GIVEN("fmap") {
+
+                    auto to_string = [](auto const v) { return std::to_string(v); };
+
+                    WHEN("when empty") {
+
+                        std::optional<int> const none;
+
+                        THEN("return an empty optional") {
+
+                            auto const none_of_string = none | to_string;
+
+                            static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<std::string>>);
+
+                            CHECK(!none_of_string.has_value());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const some_one = std::optional{1};
+
+                        THEN("return a non-empty optional containing the mapped value") {
+
+                            auto const some_one_of_string = some_one | to_string;
+
+                            static_assert(is_same_after_decaying<decltype(some_one_of_string), std::optional<std::string>>);
+
+                            CHECK(some_one_of_string.has_value());
+                            CHECK(some_one_of_string.value() == "1"s);
+                        }
+                    }
+                }
+            }
+
+            AND_GIVEN("an applicative instance") {
+
+                AND_GIVEN("pure") {
+
+                    THEN("lift into a non-empty optioanl") {
+
+                        auto const some_one = pure<std::optional>("1"s);
+
+                        static_assert(is_same_after_decaying<decltype(some_one), std::optional<std::string>>);
+
+                        CHECK(some_one.has_value());
+                        CHECK(some_one.value() == "1"s);
+                    }
+                }
+
+                AND_GIVEN("combine") {
+
+                    auto to_product_as_string = [](auto const &a, auto const &b) {
+                        return std::to_string(a * b);
+                    };
+
+                    WHEN("when empty") {
+
+                        std::optional<int> const none;
+
+                        THEN("return an empty optional") {
+
+                            auto const some_three = std::optional{3};
+                            auto const none_of_string = std::tuple{none, some_three} + to_product_as_string;
+
+                            static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<std::string>>);
+
+                            CHECK(!none_of_string.has_value());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const some_two = std::optional{2};
+
+                        THEN("return a non-empty optional with the combined value") {
+
+                            auto const some_three = std::optional<int>{3};
+                            auto const product_of_string = std::tuple{some_two, some_three} + to_product_as_string;
+
+                            static_assert(is_same_after_decaying<decltype(product_of_string), std::optional<std::string>>);
+
+                            CHECK(product_of_string.has_value());
+                            CHECK(product_of_string.value() == "6"s);
+                        }
+                    }
+                }
+            }
+
+            AND_GIVEN("a monad instance") {
+
+                AND_GIVEN("wrap") {
+
+                    THEN("lift into a non-empty optional") {
+
+                        auto const some_one = wrap<std::optional>("1"s);
+
+                        static_assert(is_same_after_decaying<decltype(some_one), std::optional<std::string>>);
+
+                        CHECK(some_one.has_value());
+                        CHECK(some_one.value() == "1"s);
+                    }
+
+                }
+
+                AND_GIVEN("bind") {
+
+                    auto to_optional_string = [](auto v) { return std::optional{std::to_string(v)}; };
+
+                    WHEN("when empty") {
+
+                        std::optional<int> const none;
+
+                        THEN("return an empty optional") {
+
+                            auto const none_of_string = none >>= to_optional_string;
+
+                            static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<std::string>>);
+
+                            CHECK(!none_of_string.has_value());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const some_one = std::optional{1};
+
+                        THEN("return a non-empty optional containing the bound value") {
+
+                            auto const some_one_of_string = some_one >>= to_optional_string;
+
+                            static_assert(is_same_after_decaying<decltype(some_one_of_string), std::optional<std::string>>);
+
+                            CHECK(some_one_of_string.has_value());
+                            CHECK(some_one_of_string.value() == "1"s);
+                        }
+                    }
+                }
+            }
+        }
     }
-
-    TEST(optional, map_should_returnMapped_when_notEmpty) {
-        auto const some_one = std::optional<int>{1};
-        auto const mapped_some = some_one | [](auto v){ return std::to_string(v * 10); };
-
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_some)>);
-
-        EXPECT_TRUE(mapped_some.has_value());
-        EXPECT_EQ("10", mapped_some.value());
-    }
-
-    TEST(optional, pure_should_returnANonEmptyApplicative) {
-        auto const some_one = pure<std::optional>(1);
-
-        static_assert(is_same_after_decaying<std::optional<int>, decltype(some_one)>);
-
-        EXPECT_TRUE(some_one.has_value());
-        EXPECT_EQ(1, some_one.value());
-    }
-
-    TEST(optional, combine_should_returnEmpty_when_empty) {
-        auto const none = std::optional<int>{};
-        auto const some_three= std::optional<int>{3};
-
-        auto const sum = none + some_three;
-        auto const product_as_string = std::tuple{some_three, none} + [](auto const& first, auto const& second) {
-            return std::to_string(first * second);
-        };
-
-        static_assert(is_same_after_decaying<std::optional<int>, decltype(sum)>);
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(product_as_string)>);
-
-        EXPECT_TRUE(!sum.has_value());
-        EXPECT_TRUE(!product_as_string.has_value());
-    }
-
-    TEST(optional, combine_should_returnCombined_when_notEmpty) {
-        auto const some_two = std::optional<int>{2};
-        auto const some_three = std::optional<int>{3};
-
-        auto const sum = some_two + some_three;
-        auto const product_as_string = std::tuple{some_three, some_two} + [](auto const& first, auto const& second) {
-            return std::to_string(first * second);
-        };
-
-        static_assert(is_same_after_decaying<std::optional<int>, decltype(sum)>);
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(product_as_string)>);
-
-        EXPECT_TRUE(sum.has_value());
-        EXPECT_EQ(5, sum.value());
-        EXPECT_TRUE(product_as_string.has_value());
-        EXPECT_EQ("6", product_as_string.value());
-    }
-
-    TEST(optional, wrap_should_returnANonEmptyMonad) {
-        auto const some_one = wrap<std::optional>(1);
-
-        static_assert(is_same_after_decaying<std::optional<int>, decltype(some_one)>);
-
-        EXPECT_TRUE(some_one.has_value());
-        EXPECT_EQ(1, some_one.value());
-    }
-
-    TEST(optional, bind_should_returnEmpty_when_empty) {
-        auto const none = std::optional<int>{};
-        auto const mapped_none = none >>= [](auto v){ return std::optional{std::to_string(v * 10)}; };
-
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_none)>);
-
-        EXPECT_TRUE(!mapped_none.has_value());
-    }
-
-    TEST(optional, bind_should_returnMapped_when_notEmpty) {
-        auto const some_one = std::optional<int>{1};
-        auto const mapped_some = some_one >>= [](auto v){ return std::optional{std::to_string(v * 10)}; };
-
-        static_assert(is_same_after_decaying<std::optional<std::string>, decltype(mapped_some)>);
-
-        EXPECT_TRUE(mapped_some.has_value());
-        EXPECT_EQ("10", mapped_some.value());
-    }
-
 }
