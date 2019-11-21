@@ -6,8 +6,8 @@
 
 namespace rvarago::kitten::detail::deriving {
 
-    template <typename BinaryFunction, template <typename ...> typename M, typename A, typename B, typename... Rest>
-    constexpr auto combine(M<A, Rest...> const &first, M<B, Rest...> const& second, BinaryFunction f) -> M<decltype(f(std::declval<A>(), std::declval<B>()))> {
+    template <typename BinaryFunction, template <typename ...> typename M, typename A, typename B>
+    constexpr auto combine(M<A> const &first, M<B> const& second, BinaryFunction f) -> M<decltype(f(std::declval<A>(), std::declval<B>()))> {
         using MonadT = monad<M>;
         return MonadT::bind(first, [&second, f](auto const& first_value) {
             return MonadT::bind(second, [&first_value, f](auto const& second_value) {
@@ -16,8 +16,8 @@ namespace rvarago::kitten::detail::deriving {
         });
     }
 
-    template <template <typename ...> typename M, typename A, typename... Rest>
-    constexpr auto wrap(A&& value) -> M<A, Rest...> {
+    template <template <typename ...> typename M, typename A>
+    constexpr auto wrap(A&& value) -> M<A> {
         using MonadT = monad<M>;
         return MonadT::wrap(std::forward<A>(value));
     }

@@ -32,8 +32,8 @@ namespace rvarago::kitten {
      * @param f a function A -> B that maps over the value wrapped inside fa to yield a value b: B
      * @return a new functor fb: F[B] resulting from applying f over the wrapped value inside fa
      */
-    template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
-    constexpr decltype(auto) fmap(F<A, Rest...> const& input, UnaryFunction f) {
+    template <typename UnaryFunction, template <typename ...> typename F, typename A>
+    constexpr decltype(auto) fmap(F<A> const& input, UnaryFunction f) {
         static_assert(traits::is_functor_v<F>, "type constructor F does not have a functor instance");
         return functor<F>::fmap(input, f);
     }
@@ -41,8 +41,8 @@ namespace rvarago::kitten {
     /**
      * Infix version of fmap.
      */
-    template <typename UnaryFunction, template <typename ...> typename F, typename A, typename... Rest>
-    constexpr decltype(auto) operator|(F<A, Rest...> const& input, UnaryFunction f) {
+    template <typename UnaryFunction, template <typename ...> typename F, typename A>
+    constexpr decltype(auto) operator|(F<A> const& input, UnaryFunction f) {
         return fmap(input, f);
     }
 }

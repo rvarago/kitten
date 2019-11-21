@@ -31,10 +31,10 @@ namespace rvarago::kitten {
      * @param tail eventual remaining type parameters used by the applicative, considered as implementation detail
      * @return a new monad m: AP[A] that wraps the contained value of type A
      */
-    template <template <typename ...> typename AP, typename A, typename... Rest>
+    template <template <typename ...> typename AP, typename A>
     constexpr decltype(auto) pure(A&& value) {
         static_assert(traits::is_applicative_v<AP>, "type constructor M does not have an applicative instance");
-        return applicative<AP>::template pure<A, Rest...>(std::forward<A>(value));
+        return applicative<AP>::pure(std::forward<A>(value));
     }
 
     /**
@@ -45,8 +45,8 @@ namespace rvarago::kitten {
      * @param f a function A -> A -> B that maps over the values wrapped inside apa1 and apa2 to yield a value b: B
      * @return a new applicative apb: AP[B] resulting from applying f over the wrapped value inside apa1 and apa2
      */
-    template <typename BinaryFunction, template <typename ...> typename AP, typename A, typename B, typename... Rest>
-    constexpr decltype(auto) combine(AP<A, Rest...> const& first, AP<B, Rest...> const& second, BinaryFunction f) {
+    template <typename BinaryFunction, template <typename ...> typename AP, typename A, typename B>
+    constexpr decltype(auto) combine(AP<A> const& first, AP<B> const& second, BinaryFunction f) {
         static_assert(traits::is_applicative_v<AP>, "type constructor AP does not have an applicative instance");
         return applicative<AP>::combine(first, second, f);
     }
@@ -55,16 +55,16 @@ namespace rvarago::kitten {
     /**
      * Infix version of combine. Since operator+ expects two arguments, we had to wrap the applicatives in a tuple.
      */
-    template <typename BinaryFunction, template <typename ...> typename AP, typename A, typename B, typename... Rest>
-    constexpr decltype(auto) operator+(std::tuple<AP<A, Rest...>, AP<B, Rest...>> const& input, BinaryFunction f) {
+    template <typename BinaryFunction, template <typename ...> typename AP, typename A, typename B>
+    constexpr decltype(auto) operator+(std::tuple<AP<A>, AP<B>> const& input, BinaryFunction f) {
         return combine(std::get<0>(input), std::get<1>(input), f);
     }
 
     /**
      * Infix version of combine that receives unwrapped applicatives and uses + as a binary function.
      */
-    template <template <typename ...> typename AP, typename A, typename B, typename... Rest>
-    constexpr decltype(auto) operator+(AP<A, Rest...> const& first, AP<B, Rest...> const& second) {
+    template <template <typename ...> typename AP, typename A, typename B>
+    constexpr decltype(auto) operator+(AP<A> const& first, AP<B> const& second) {
         return combine(first, second, std::plus{});
     }
 
