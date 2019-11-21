@@ -29,11 +29,11 @@ target_include_directories(${PROJECT_NAME}
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-find_package(gtest REQUIRED)
+find_package(catch2 REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
-            gtest::gtest
+            catch2::catch2
             rvarago::kitten
 )
 

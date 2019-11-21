@@ -1,161 +1,178 @@
-#include <gtest/gtest.h>
+#include <catch2/catch.hpp>
 
 #include <iterator>
 #include <string>
 #include <kitten/instances/sequence_container.h>
 
+#include "utils.h"
+
 namespace {
 
-    using namespace rvarago::kitten;
+    using namespace std::string_literals;
 
-    template <typename SequenceContainer, typename Index>
-    decltype(auto) value_at(SequenceContainer const &container, Index index) {
+    using namespace rvarago::kitten;
+    using test::utils::is_same_after_decaying;
+
+    template <typename Range, typename Index>
+    decltype(auto) value_at(Range const &container, Index index) {
         return *std::next(std::cbegin(container), index);
     }
 
-    template <typename T>
-    struct SequenceContainerTest : public ::testing::Test {
-        using type = T;
-    };
+    template <typename T, typename Allocator = std::allocator<T>>
+    using SequenceContainer = std::vector<T, Allocator>;
 
-    // TODO: Generalize the tests to support template template parameter
-    using sequence_containers = ::testing::Types<std::deque<int>, std::list<int>, std::vector<int>>;
+    SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "[SequenceContainer]") {
 
-    TYPED_TEST_CASE(SequenceContainerTest, sequence_containers);
+        GIVEN("A SequenceContainer") {
 
-    TYPED_TEST(SequenceContainerTest, map_should_returnEmpty_when_empty) {
-        using T  = typename TestFixture::type;
+            AND_GIVEN("a functor instance") {
 
-        auto const empty = T{};
-        auto const mapped_empty = empty | [](auto v){ return std::to_string(v * 10); };
+                AND_GIVEN("fmap") {
 
-        EXPECT_TRUE(mapped_empty.empty());
+                    auto to_string = [](auto const v) { return std::to_string(v); };
+
+                    WHEN("when empty") {
+
+                        SequenceContainer<int> const empty;
+
+                        THEN("return an empty SequenceContainer") {
+
+                            auto const empty_of_strings = empty | to_string;
+
+                            static_assert(is_same_after_decaying<decltype(empty_of_strings), SequenceContainer <std::string>>);
+
+                            CHECK(empty_of_strings.empty());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const container_of_ints = SequenceContainer<int>{1, 2};
+
+                        THEN("return a non-empty SequenceContainer containing the mapped values") {
+
+                            auto const container_of_strings = container_of_ints | to_string;
+
+                            static_assert(is_same_after_decaying<decltype(container_of_strings), SequenceContainer<std::string>>);
+
+                            CHECK(container_of_strings.size() == 2);
+                            CHECK(value_at(container_of_strings, 0) == "1"s);
+                            CHECK(value_at(container_of_strings, 1) == "2"s);
+                        }
+                    }
+                }
+            }
+
+            AND_GIVEN("an applicative instance") {
+
+                AND_GIVEN("pure") {
+
+                    THEN("lift into a non-empty SequenceContainer") {
+
+                        auto const singleton = pure<SequenceContainer>("1"s);
+
+                        static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
+
+                        CHECK(singleton.size() == 1);
+                        CHECK(value_at(singleton, 0) == "1"s);
+                    }
+                }
+
+                AND_GIVEN("combine") {
+
+                    auto to_product_as_string = [](auto const &a, auto const &b) {
+                        return std::to_string(std::stoi(a) * b);
+                    };
+
+                    WHEN("when empty") {
+
+                        SequenceContainer<std::string> const empty_of_string;
+
+                        THEN("return an empty SequenceContainer") {
+
+                            auto const container_int = SequenceContainer<int>{20, 30};
+                            auto const product_of_string = std::tuple{empty_of_string, container_int} + to_product_as_string;
+
+                            static_assert(is_same_after_decaying<decltype(product_of_string), SequenceContainer<std::string>>);
+
+                            CHECK(product_of_string.empty());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const first_container_of_string = SequenceContainer<std::string>{"2", "3"};
+
+                        THEN("return a non-empty SequenceContainer with the combined value") {
+
+                            auto const second_container_of_int = SequenceContainer<int>{20, 30};
+                            auto const product_of_string = std::tuple{first_container_of_string, second_container_of_int} + to_product_as_string;
+
+                            static_assert(is_same_after_decaying<decltype(product_of_string), SequenceContainer<std::string>>);
+
+                            CHECK(product_of_string.size() == 4);
+                            CHECK(value_at(product_of_string, 0) == "40"s);
+                            CHECK(value_at(product_of_string, 1) == "60"s);
+                            CHECK(value_at(product_of_string, 2) == "60"s);
+                            CHECK(value_at(product_of_string, 3) == "90"s);
+                        }
+                    }
+                }
+            }
+
+            AND_GIVEN("a monad instance") {
+
+                AND_GIVEN("wrap") {
+
+                    THEN("lift into a non-empty SequenceContainer") {
+
+                        auto const singleton = wrap<SequenceContainer>("1"s);
+
+                        static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
+
+                        CHECK(singleton.size() == 1);
+                        CHECK(value_at(singleton, 0) == "1"s);
+                    }
+
+                }
+
+                AND_GIVEN("bind") {
+
+                    auto to_SequenceContainer_string = [](auto v) { return SequenceContainer<std::string>{std::to_string(v), std::to_string(v)}; };
+
+                    WHEN("when empty") {
+
+                        SequenceContainer<int> const empty;
+
+                        THEN("return an empty SequenceContainer") {
+
+                            auto const empty_of_string = SequenceContainer<int>{} >>= to_SequenceContainer_string;
+
+                            static_assert(is_same_after_decaying<decltype(empty_of_string), SequenceContainer<std::string>>);
+
+                            CHECK(empty_of_string.empty());
+                        }
+                    }
+
+                    WHEN("when not empty") {
+
+                        auto const container = SequenceContainer<int>{1, 2};
+
+                        THEN("return a non-empty SequenceContainer containing the bound value") {
+
+                            auto const container_of_string = container >>= to_SequenceContainer_string;
+
+                            static_assert(is_same_after_decaying<decltype(container_of_string), SequenceContainer<std::string>>);
+
+                            CHECK(container_of_string.size() == 4);
+                            CHECK(value_at(container_of_string, 0) == "1"s);
+                            CHECK(value_at(container_of_string, 1) == "1"s);
+                            CHECK(value_at(container_of_string, 2) == "2"s);
+                            CHECK(value_at(container_of_string, 3) == "2"s);
+                        }
+                    }
+                }
+            }
+        }
     }
-
-
-    TYPED_TEST(SequenceContainerTest, map_should_returnMapped_when_notEmpty) {
-        using T  = typename TestFixture::type;
-
-        auto const container = T{1, 2};
-        auto const mapped_container = container | [](auto v){ return std::to_string(v * 10); };
-
-        EXPECT_TRUE(!mapped_container.empty());
-        EXPECT_EQ(2, mapped_container.size());
-
-        EXPECT_EQ("10", value_at(mapped_container, 0));
-        EXPECT_EQ("20", value_at(mapped_container, 1));
-
-    }
-
-    TEST(deque, pure_should_returnANonEmptyApplicative) {
-        // FIXME: Test for all the other containers
-        auto const singleton = pure<std::deque>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-    TEST(vector, pure_should_returnANonEmptyApplicative) {
-        auto const singleton = pure<std::vector>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-    TEST(list, pure_should_returnANonEmptyApplicative) {
-        auto const singleton = pure<std::list>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-
-    TYPED_TEST(SequenceContainerTest, combine_should_returnEmpty_when_notEmpty) {
-        using T  = typename TestFixture::type;
-        auto const empty = T{};
-        auto const second_container = T{20, 30};
-
-        auto const sum = empty + second_container;
-        auto const product_as_string = std::tuple{second_container, empty} + [](auto const& first, auto const& second) {
-            return std::to_string(first * second);
-        };
-
-        EXPECT_TRUE(sum.empty());
-
-        EXPECT_TRUE(product_as_string.empty());
-    }
-
-    TYPED_TEST(SequenceContainerTest, combine_should_returnCombined_when_notEmpty) {
-        using T  = typename TestFixture::type;
-        auto const first_container = T{2, 3};
-        auto const second_container = T{20, 30};
-
-        auto const sum = first_container + second_container;
-        auto const product_as_string = std::tuple{second_container, first_container} + [](auto const& first, auto const& second) {
-            return std::to_string(first * second);
-        };
-
-        EXPECT_TRUE(!sum.empty());
-        EXPECT_EQ(4, sum.size());
-
-        EXPECT_EQ(22, value_at(sum, 0));
-        EXPECT_EQ(32, value_at(sum, 1));
-        EXPECT_EQ(23, value_at(sum, 2));
-        EXPECT_EQ(33, value_at(sum, 3));
-
-        EXPECT_TRUE(!product_as_string.empty());
-        EXPECT_EQ(4, product_as_string.size());
-
-        EXPECT_EQ("40", value_at(product_as_string, 0));
-        EXPECT_EQ("60", value_at(product_as_string, 1));
-        EXPECT_EQ("60", value_at(product_as_string, 2));
-        EXPECT_EQ("90", value_at(product_as_string, 3));
-    }
-
-    TEST(deque, wrap_should_returnANonEmptyMonad) {
-        // FIXME: Test for all the other containers
-        auto const singleton = wrap<std::deque>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-    TEST(vector, wrap_should_returnANonEmptyMonad) {
-        auto const singleton = wrap<std::vector>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-    TEST(list, wrap_should_returnANonEmptyMonad) {
-        auto const singleton = wrap<std::list>(1);
-
-        EXPECT_TRUE(!singleton.empty());
-        EXPECT_EQ(1, value_at(singleton, 0));
-    }
-
-    TYPED_TEST(SequenceContainerTest, bind_should_returnEmpty_when_empty) {
-        using T  = typename TestFixture::type;
-
-        auto const empty = T{};
-        auto const mapped_empty = empty >>= [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
-
-        EXPECT_TRUE(mapped_empty.empty());
-    }
-
-    TYPED_TEST(SequenceContainerTest, bind_should_returnMapped_when_notEmpty) {
-        using T  = typename TestFixture::type;
-
-        auto const container = T{1, 2};
-        auto const mapped_container = container >>= [](auto v){ return std::vector{std::to_string(v * 10), std::to_string(v * 100)}; };
-
-        EXPECT_TRUE(!mapped_container.empty());
-        EXPECT_EQ(4, mapped_container.size());
-
-        EXPECT_EQ("10", value_at(mapped_container, 0));
-        EXPECT_EQ("100", value_at(mapped_container, 1));
-        EXPECT_EQ("20", value_at(mapped_container, 2));
-        EXPECT_EQ("200", value_at(mapped_container, 3));
-    }
-
 }
