@@ -40,7 +40,7 @@ namespace rvarago::kitten {
 
         template <typename A>
         static constexpr auto pure(A&& value) -> std::optional<A> {
-            return detail::deriving::wrap<std::optional>(std::forward<A>(value));
+            return detail::deriving::pure<std::optional>(std::forward<A>(value));
         }
 
     };
