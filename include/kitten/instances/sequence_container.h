@@ -40,8 +40,8 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct monad<SequenceContainer> {
 
-        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto bind(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
+        template <typename UnaryFunction, typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto bind(SequenceContainer<A> const& input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
             auto mapped_sequence = decltype(f(std::declval<A>())){};
             for (auto const& el : input) {
                 detail::ranges::copy(f(el), std::back_inserter(mapped_sequence));
@@ -49,9 +49,9 @@ namespace rvarago::kitten {
             return mapped_sequence;
         }
 
-        template <typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto wrap(A&& value, Rest&&... tail) -> SequenceContainer<A, Rest...> {
-            return SequenceContainer<A, Rest...>{std::forward<A>(value), std::forward<Rest>(tail)...};
+        template <typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto wrap(A&& value) -> SequenceContainer<A> {
+            return SequenceContainer<A>{std::forward<A>(value)};
         }
 
     };
@@ -59,14 +59,14 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct applicative<SequenceContainer> {
 
-        template <typename BinaryFunction, typename A, typename B, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto combine(SequenceContainer<A, Rest...> const &first, SequenceContainer<B, Rest...> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
+        template <typename BinaryFunction, typename A, typename B, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto combine(SequenceContainer<A> const &first, SequenceContainer<B> const& second, BinaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>(), std::declval<B>()))> {
             return detail::deriving::combine(first, second, f);
         }
 
-        template <typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto pure(A&& value, Rest&&... tail) -> SequenceContainer<A, Rest...> {
-            return detail::deriving::wrap<SequenceContainer>(std::forward<A>(value), std::forward<Rest>(tail)...);
+        template <typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto pure(A&& value) -> SequenceContainer<A> {
+            return detail::deriving::wrap<SequenceContainer>(std::forward<A>(value));
         }
 
     };
@@ -74,8 +74,8 @@ namespace rvarago::kitten {
     template <template <typename...> typename SequenceContainer>
     struct functor<SequenceContainer> {
 
-        template <typename UnaryFunction, typename A, typename... Rest, typename = detail::enable_if_sequence_container<SequenceContainer>>
-        static constexpr auto fmap(SequenceContainer<A, Rest...> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
+        template <typename UnaryFunction, typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+        static constexpr auto fmap(SequenceContainer<A> const& input, UnaryFunction f) -> SequenceContainer<decltype(f(std::declval<A>()))> {
             return detail::deriving::fmap(input, f);
         }
 

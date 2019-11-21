@@ -38,10 +38,10 @@ namespace rvarago::kitten {
      * @param tail eventual remaining type parameters used by the monad, considered as implementation detail
      * @return a new monad m: M[A] that wraps the contained value of type A
      */
-    template <template <typename ...> typename M, typename A, typename... Rest>
+    template <template <typename ...> typename M, typename A>
     constexpr decltype(auto) wrap(A&& value) {
         static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
-        return monad<M>::template wrap<A, Rest...>(std::forward<A>(value));
+        return monad<M>::wrap(std::forward<A>(value));
     }
 
     /**
@@ -51,8 +51,8 @@ namespace rvarago::kitten {
      * @param f a function A -> M[B] that maps over the value wrapped inside ma to produce a new monad mb_temp: M[B]
      * @return a new monad mb: M[B] resulting from applying f over the wrapped value inside ma and then flattening the result
      */
-    template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
-    constexpr decltype(auto) bind(M<A, Rest...> const& input, UnaryFunction f) {
+    template <typename UnaryFunction, template <typename...> typename M, typename A>
+    constexpr decltype(auto) bind(M<A> const& input, UnaryFunction f) {
         static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
         return monad<M>::bind(input, f);
     }
@@ -60,8 +60,9 @@ namespace rvarago::kitten {
     /**
      * Infix version of bind.
      */
-    template <typename UnaryFunction, template <typename ...> typename M, typename A, typename... Rest>
-    constexpr decltype(auto) operator>>=(M<A, Rest...> const& input, UnaryFunction f) {
+
+    template <typename UnaryFunction, template <typename...> typename M, typename A>
+    constexpr decltype(auto) operator>>=(M<A> const& input, UnaryFunction f) {
         return bind(input, f);
     }
 
