@@ -42,10 +42,9 @@ struct monad<SequenceContainer> {
 
     template <typename A, typename UnaryFunction, typename = detail::enable_if_sequence_container<SequenceContainer>>
     static constexpr auto bind(SequenceContainer<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
+        using namespace detail::ranges;
         auto mapped_sequence = decltype(f(std::declval<A>())){};
-        for (auto const &el : input) {
-            detail::ranges::copy(f(el), std::back_inserter(mapped_sequence));
-        }
+        for_each(input, [&](auto const &e) { copy(f(e), std::back_inserter(mapped_sequence)); });
         return mapped_sequence;
     }
 
