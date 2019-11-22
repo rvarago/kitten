@@ -45,7 +45,7 @@ constexpr decltype(auto) pure(A &&value) {
  * @param f a function A -> A -> B that maps over the values wrapped inside apa1 and apa2 to yield a value b: B
  * @return a new applicative apb: AP[B] resulting from applying f over the wrapped value inside apa1 and apa2
  */
-template <typename BinaryFunction, template <typename...> typename AP, typename A, typename B>
+template <template <typename...> typename AP, typename A, typename B, typename BinaryFunction>
 constexpr decltype(auto) combine(AP<A> const &first, AP<B> const &second, BinaryFunction f) {
     static_assert(traits::is_applicative_v<AP>, "type constructor AP does not have an applicative instance");
     return applicative<AP>::combine(first, second, f);
@@ -54,7 +54,7 @@ constexpr decltype(auto) combine(AP<A> const &first, AP<B> const &second, Binary
 /**
  * Infix version of combine. Since operator+ expects two arguments, we had to wrap the applicatives in a tuple.
  */
-template <typename BinaryFunction, template <typename...> typename AP, typename A, typename B>
+template <template <typename...> typename AP, typename A, typename B, typename BinaryFunction>
 constexpr decltype(auto) operator+(std::tuple<AP<A>, AP<B>> const &input, BinaryFunction f) {
     return combine(std::get<0>(input), std::get<1>(input), f);
 }

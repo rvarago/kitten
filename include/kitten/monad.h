@@ -52,7 +52,7 @@ constexpr decltype(auto) wrap(A &&value) {
  * @return a new monad mb: M[B] resulting from applying f over the wrapped value inside ma and then flattening the
  * result
  */
-template <typename UnaryFunction, template <typename...> typename M, typename A>
+template <template <typename...> typename M, typename A, typename UnaryFunction>
 constexpr decltype(auto) bind(M<A> const &input, UnaryFunction f) {
     static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
     return monad<M>::bind(input, f);
@@ -62,7 +62,7 @@ constexpr decltype(auto) bind(M<A> const &input, UnaryFunction f) {
  * Infix version of bind.
  */
 
-template <typename UnaryFunction, template <typename...> typename M, typename A>
+template <template <typename...> typename M, typename A, typename UnaryFunction>
 constexpr decltype(auto) operator>>=(M<A> const &input, UnaryFunction f) {
     return bind(input, f);
 }
