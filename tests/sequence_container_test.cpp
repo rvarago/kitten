@@ -63,6 +63,43 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
             }
+
+            AND_GIVEN("liftF") {
+
+                auto to_string_lifted = liftF<SequenceContainer>([](auto const v) { return std::to_string(v); });
+
+                WHEN("when empty") {
+
+                    SequenceContainer<int> const empty;
+
+                    THEN("return an empty SequenceContainer") {
+
+                        auto const empty_of_strings = to_string_lifted(empty);
+
+                        static_assert(
+                            is_same_after_decaying<decltype(empty_of_strings), SequenceContainer<std::string>>);
+
+                        CHECK(empty_of_strings.empty());
+                    }
+                }
+
+                WHEN("when not empty") {
+
+                    auto const container_of_ints = SequenceContainer<int>{1, 2};
+
+                    THEN("return a non-empty SequenceContainer containing the mapped values") {
+
+                        auto const container_of_strings = to_string_lifted(container_of_ints);
+
+                        static_assert(
+                            is_same_after_decaying<decltype(container_of_strings), SequenceContainer<std::string>>);
+
+                        CHECK(container_of_strings.size() == 2);
+                        CHECK(value_at(container_of_strings, 0) == "1"s);
+                        CHECK(value_at(container_of_strings, 1) == "2"s);
+                    }
+                }
+            }
         }
 
         AND_GIVEN("an applicative instance") {

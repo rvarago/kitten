@@ -78,6 +78,10 @@ Where `maybe_find_person` returns an `std::optional<person>`, and then the wrapp
 
 Thus, the result of the whole composition is of type `std::optional<name>`.
 
+An equivalent way to define a functor is by providing the function `liftF`,
+which maps a function `w: A -> B` into another function `z: X[A] -> X[B]`,
+where `X[T]` is a functor.
+
 ### Applicatives
 
 What happens if `f` takes several arguments? For instance, we have the objects `xa: X<A>` and `xb: X<B>` and the

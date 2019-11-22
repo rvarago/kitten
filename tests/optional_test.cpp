@@ -51,6 +51,40 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                     }
                 }
             }
+
+            AND_GIVEN("liftF") {
+
+                auto to_string_lifted = liftF<std::optional>([](auto const v) { return std::to_string(v); });
+
+                WHEN("when empty") {
+
+                    std::optional<int> const none;
+
+                    THEN("return an empty optional") {
+
+                        auto const none_of_string = to_string_lifted(none);
+
+                        static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<std::string>>);
+
+                        CHECK(!none_of_string.has_value());
+                    }
+                }
+
+                WHEN("when not empty") {
+
+                    auto const some_one = std::optional{1};
+
+                    THEN("return an empty optional") {
+
+                        auto const some_one_of_string = to_string_lifted(some_one);
+
+                        static_assert(is_same_after_decaying<decltype(some_one_of_string), std::optional<std::string>>);
+
+                        CHECK(some_one_of_string.has_value());
+                        CHECK(some_one_of_string.value() == "1"s);
+                    }
+                }
+            }
         }
 
         AND_GIVEN("an applicative instance") {

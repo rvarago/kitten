@@ -45,6 +45,18 @@ template <template <typename...> typename F, typename A, typename UnaryFunction>
 constexpr decltype(auto) operator|(F<A> const &input, UnaryFunction f) {
     return fmap(input, f);
 }
+
+/**
+ * Lifts a function A -> B into a function F[A] -> F[B], where F[_] is a functor.
+ *
+ * @param f a function A -> B that shall be applied to the content of F[A] where it's later provided
+ * @return a lifted function F[A] -> F[B]
+ */
+template <template <typename...> typename F, typename UnaryFunction>
+constexpr decltype(auto) liftF(UnaryFunction f) {
+    return [f](auto const &input) { return functor<F>::fmap(input, f); };
+}
+
 }
 
 #endif
