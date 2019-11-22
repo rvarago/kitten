@@ -252,15 +252,10 @@ by the helper function `types::fn`, then `fmap(fx, fy)` returns a new `types::fu
 ## Requirements
 
 * C++17
-* Make
 * CMake
-* Conan
-* Docker
-
-### Notes
-
-- Make is only required if you want to use it to orchestrate task execution, for instance to invoke Conan, CMake, etc.
-- Docker is only required if you want to run the tests inside a container.
+* Make (_only if you want to use it to orchestrate task execution_)
+* Conan (_only if you want generate a package or build the tests using conan as a provider for the test framework_)
+* Docker (_only if you want build from inside a docker container_)
 
 ## Build
 
@@ -313,20 +308,24 @@ make env-test
 To install _kitten_:
 
 ``
-sudo make install
+make install
 ``
 
 Then, it's possible to import _kitten_ into external CMake projects, say in a target _myExample_, by simply adding the
 following commands to its _CMakeLists.txt_:
 
-``
+```
 find_package(kitten)
 target_link_libraries(myExample rvarago::kitten)
-``
+```
 
-## Packaging via Conan
+## Conan package
 
-To generate a package via Conan:
+kitten can also be consumed a conan [package](https://bintray.com/conan/conan-center/kitten%3A_) available in the conan-center.
+
+### Packaging via Conan
+
+It's also possible to generate a package via Conan directly from the source tree:
 
 ``
 make conan-package
