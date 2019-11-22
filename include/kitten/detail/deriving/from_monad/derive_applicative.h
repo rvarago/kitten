@@ -6,7 +6,7 @@
 
 namespace rvarago::kitten::detail::deriving {
 
-template <typename BinaryFunction, template <typename...> typename M, typename A, typename B>
+template <template <typename...> typename M, typename A, typename B, typename BinaryFunction>
 constexpr auto combine(M<A> const &first, M<B> const &second, BinaryFunction f)
     -> M<decltype(f(std::declval<A>(), std::declval<B>()))> {
     using MonadT = monad<M>;

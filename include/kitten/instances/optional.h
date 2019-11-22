@@ -15,7 +15,7 @@ namespace rvarago::kitten {
 template <>
 struct monad<std::optional> {
 
-    template <typename UnaryFunction, typename A>
+    template <typename A, typename UnaryFunction>
     static constexpr auto bind(std::optional<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
         if (!input) {
             return std::nullopt;
@@ -32,7 +32,7 @@ struct monad<std::optional> {
 template <>
 struct applicative<std::optional> {
 
-    template <typename BinaryFunction, typename A, typename B>
+    template <typename A, typename B, typename BinaryFunction>
     static constexpr auto combine(std::optional<A> const &first, std::optional<B> const &second, BinaryFunction f)
         -> std::optional<decltype(f(std::declval<A>(), std::declval<B>()))> {
         return detail::deriving::combine(first, second, f);
@@ -47,7 +47,7 @@ struct applicative<std::optional> {
 template <>
 struct functor<std::optional> {
 
-    template <typename UnaryFunction, typename A>
+    template <typename A, typename UnaryFunction>
     static constexpr auto fmap(std::optional<A> const &input, UnaryFunction f)
         -> std::optional<decltype(f(std::declval<A>()))> {
         return detail::deriving::fmap(input, f);

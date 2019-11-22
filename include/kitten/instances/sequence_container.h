@@ -40,7 +40,7 @@ using enable_if_sequence_container = typename std::enable_if_t<is_sequence_conta
 template <template <typename...> typename SequenceContainer>
 struct monad<SequenceContainer> {
 
-    template <typename UnaryFunction, typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+    template <typename A, typename UnaryFunction, typename = detail::enable_if_sequence_container<SequenceContainer>>
     static constexpr auto bind(SequenceContainer<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
         auto mapped_sequence = decltype(f(std::declval<A>())){};
         for (auto const &el : input) {
@@ -58,7 +58,7 @@ struct monad<SequenceContainer> {
 template <template <typename...> typename SequenceContainer>
 struct applicative<SequenceContainer> {
 
-    template <typename BinaryFunction, typename A, typename B,
+    template <typename A, typename B, typename BinaryFunction,
               typename = detail::enable_if_sequence_container<SequenceContainer>>
     static constexpr auto combine(SequenceContainer<A> const &first, SequenceContainer<B> const &second,
                                   BinaryFunction f)
@@ -75,7 +75,7 @@ struct applicative<SequenceContainer> {
 template <template <typename...> typename SequenceContainer>
 struct functor<SequenceContainer> {
 
-    template <typename UnaryFunction, typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+    template <typename A, typename UnaryFunction, typename = detail::enable_if_sequence_container<SequenceContainer>>
     static constexpr auto fmap(SequenceContainer<A> const &input, UnaryFunction f)
         -> SequenceContainer<decltype(f(std::declval<A>()))> {
         return detail::deriving::fmap(input, f);
