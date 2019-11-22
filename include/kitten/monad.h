@@ -9,10 +9,10 @@ namespace rvarago::kitten {
  * A monad is an abstraction that allows to be mapped over where the mapping function itself returns a monad.
  *
  * Given a monad ma: M[A] and a function f: A -> M[B]
- *  It uses f to map over over ma, flat the return type, and then return a new monad mb: M[B].
+ *  It uses f to map over the value unwrapped from ma, flats the return type, and then returns a new monad mb: M[B].
  *
- * Note that if we had done as we do for functors, i.e. to do map(ma, f), we'd have a M[M[B]] that should then be
- * flattened. but bind does both the mapping and then the flattening.
+ * Note that if we had done as we do for functors, i.e. to do map(ma, f), we'd have a M[M[B]] that would have to be
+ * flattened. Whereas bind performs both the mapping and the flattening.
  *
  * Laws:
  *
@@ -45,11 +45,12 @@ constexpr decltype(auto) wrap(A &&value) {
 }
 
 /**
- * Forwards to the monad implementation.
+ * Unwraps the monad ma: M[A], feeds the unwrapped value of type A into the function f: A -> M[B], and then returns
+ * its result.
  *
  * @param input a monad ma: M[A]
  * @param f a function A -> M[B] that maps over the value wrapped inside ma to produce a new monad mb_temp: M[B]
- * @return a new monad mb: M[B] resulting from applying f over the wrapped value inside ma and then flattening the
+ * @return a new monad mb: M[B] resulting from applying f over the unwrapped value from ma and then flattening the
  * result
  */
 template <template <typename...> typename M, typename A, typename UnaryFunction>
@@ -61,7 +62,6 @@ constexpr decltype(auto) bind(M<A> const &input, UnaryFunction f) {
 /**
  * Infix version of bind.
  */
-
 template <template <typename...> typename M, typename A, typename UnaryFunction>
 constexpr decltype(auto) operator>>=(M<A> const &input, UnaryFunction f) {
     return bind(input, f);

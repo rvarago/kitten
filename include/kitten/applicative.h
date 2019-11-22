@@ -9,8 +9,8 @@ namespace rvarago::kitten {
 /**
  * An applicative is an abstraction that allows the combination of two wrapped values.
  *
- * Given two applicatives apa1: AP[A] and  apa2: AP[A] and a binary function f: A -> A -> B
- *  It uses f to map over apa1 and apa2 and then return a new applicative apb: AP[B].
+ * Given two applicatives apa: AP[A] and  apb: AP[B] and a binary function f: (A, B) -> C
+ *  It uses f to map over the values unwrapped from apa and apb and then returns a new applicative apc: AP[C].
  *
  */
 template <template <typename...> typename AP, typename = void>
@@ -38,12 +38,14 @@ constexpr decltype(auto) pure(A &&value) {
 }
 
 /**
- * Forwards to the applicative implementation.
+ * Unwraps the applicatives apa: AP[A] and apb: AP[B], feeds the unwrapped value of types A and B into the function
+ * f: (A, B) -> C, and then returns its result wrapped in a functor F[B]..
  *
- * @param first an applicative apa1: AP[A]
- * @param second an applicative apa2: AP[A]
- * @param f a function A -> A -> B that maps over the values wrapped inside apa1 and apa2 to yield a value b: B
- * @return a new applicative apb: AP[B] resulting from applying f over the wrapped value inside apa1 and apa2
+ * @param first an applicative apa: AP[A]
+ * @param second an applicative apb: AP[B]
+ * @param f a function A -> B -> C that maps over the values unwrapped from apa and apb to yield a value c: C
+ * @return a new applicative apc: AP[C] resulting from wrapping the application of f over the wrapped value inside apa
+ * and apb
  */
 template <template <typename...> typename AP, typename A, typename B, typename BinaryFunction>
 constexpr decltype(auto) combine(AP<A> const &first, AP<B> const &second, BinaryFunction f) {
