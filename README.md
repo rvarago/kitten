@@ -209,24 +209,43 @@ set of lambda expressions, and the right overload is then selected at compile-ti
 ## kitten
 
 _kitten_ relies on the STL to provide functor, applicative, monad, and multi-functor instances for some C++ data types. Given that the data type admits
-such instances, it's then possible to use the combinators available as free functions:
+such instances, it's then possible to use the combinators available as free functions.
 
-- `fmap` for types that have functor instances
-- `combine` for types that have applicative instances
-- `bind` for types that have monad instances
-- `multimap` for types that have multi-functor instances
-
-Also, to simplify notation, they also come as overloaded operators that enable a, hopefully, nicer, infix syntax:
-
-- `|` as an alias for `fmap`
-- `+` as an alias for `combine`
-- `>>` as an alias for `bind`
-- `||` as an alias for `multimap`
+To simplify the notation, many combinators also come with overloaded operators that enable a, hopefully, nicer infix syntax
+suitable for chaining several calls.
 
 The combinators are available conveniently in the header: `kitten/kitten.h`, or by importing each one separately. And
 the main namespace is `rvarago::kitten`.
 
 Note that it's possible that a type may not admit instances for all the structures, e.g a type may have a functor but not a monad.
+
+### Functor
+
+|    Combinator     |   Infix  |
+|:-----------------:|:--------:|
+|      `fmap`       | &#x7c;   |
+|      `liftF`      |          |
+
+### Multi-functor
+
+|    Combinator     |      Infix    |
+|:-----------------:|:-------------:|
+|      `multimap`   |  &#x7c;&#x7c; |
+
+### Applicative
+
+|    Combinator     |      Infix    |
+|:-----------------:|:-------------:|
+|      `pure`       |               |
+|      `combine`    |        +      |
+
+
+### Monad
+
+|    Combinator     |      Infix    |
+|:-----------------:|:-------------:|
+|      `wrap`       |               |
+|      `bind`       |        >>     |
 
 ### Adapters
 
