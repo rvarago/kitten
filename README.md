@@ -248,11 +248,15 @@ by the helper function `types::fn`, then `fmap(fx, fy)` returns a new `types::fu
  `fz: A -> C` that applies `fx` and then `fy`. So, by providing an argument
  `x` of type `A`, we have: `fmap(fx, fy)(x) == fy(fx(x))`.
 
-
 ## Requirements
 
+### Mandatory
+
 * C++17
-* CMake
+
+### Optional
+
+* CMake (_only if you need to build from sources_)
 * Make (_only if you want to use it to orchestrate task execution_)
 * Conan (_only if you want generate a package or build the tests using conan as a provider for the test framework_)
 * Docker (_only if you want build from inside a docker container_)
