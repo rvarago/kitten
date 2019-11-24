@@ -22,7 +22,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
                 auto to_string = [](auto const v) { return std::to_string(v); };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     std::optional<int> const none;
 
@@ -36,7 +36,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const some_one = std::optional{1};
 
@@ -56,7 +56,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
                 auto to_string_lifted = liftF<std::optional>([](auto const v) { return std::to_string(v); });
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     std::optional<int> const none;
 
@@ -70,7 +70,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const some_one = std::optional{1};
 
@@ -106,7 +106,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
                 auto to_product_as_string = [](auto const &a, auto const &b) { return std::to_string(a * b); };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     std::optional<int> const none;
 
@@ -121,7 +121,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const some_two = std::optional{2};
 
@@ -157,33 +157,34 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
             AND_GIVEN("bind") {
 
                 auto to_optional_string = [](auto v) { return std::optional{std::to_string(v)}; };
+                auto to_optional_int = [](auto v) { return std::optional{std::stoi(v)}; };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     std::optional<int> const none;
 
                     THEN("return an empty optional") {
 
-                        auto const none_of_string = none >>= to_optional_string;
+                        auto const none_of_string = none >> to_optional_string >> to_optional_int;
 
-                        static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<std::string>>);
+                        static_assert(is_same_after_decaying<decltype(none_of_string), std::optional<int>>);
 
                         CHECK(!none_of_string.has_value());
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const some_one = std::optional{1};
 
                     THEN("return a non-empty optional containing the bound value") {
 
-                        auto const some_one_of_string = some_one >>= to_optional_string;
+                        auto const some_one_of_string = some_one >> to_optional_string >> to_optional_int;
 
-                        static_assert(is_same_after_decaying<decltype(some_one_of_string), std::optional<std::string>>);
+                        static_assert(is_same_after_decaying<decltype(some_one_of_string), std::optional<int>>);
 
                         CHECK(some_one_of_string.has_value());
-                        CHECK(some_one_of_string.value() == "1"s);
+                        CHECK(some_one_of_string.value() == 1);
                     }
                 }
             }

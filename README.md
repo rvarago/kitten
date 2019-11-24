@@ -175,7 +175,7 @@ of type `A` into a monad `X<A>`.
 Using _kitten_, one example of using a monad is:
 
 ```
-auto const maybe_name = maybe_find_person() >>= maybe_get_name; // or bind(maybe_find_person(), maybe_get_name)
+auto const maybe_name = maybe_find_person() >> maybe_get_name; // or bind(maybe_find_person(), maybe_get_name)
 ```
 
 Where `maybe_find_person` returns an `std::optional<person>`, and then the wrapped object of type `person` is fed into
@@ -220,7 +220,7 @@ Also, to simplify notation, they also come as overloaded operators that enable a
 
 - `|` as an alias for `fmap`
 - `+` as an alias for `combine`
-- `>>=` as an alias for `bind`
+- `>>` as an alias for `bind`
 - `||` as an alias for `multimap`
 
 The combinators are available conveniently in the header: `kitten/kitten.h`, or by importing each one separately. And
