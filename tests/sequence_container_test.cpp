@@ -31,7 +31,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
 
                 auto to_string = [](auto const v) { return std::to_string(v); };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     SequenceContainer<int> const empty;
 
@@ -46,7 +46,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const container_of_ints = SequenceContainer<int>{1, 2};
 
@@ -68,7 +68,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
 
                 auto to_string_lifted = liftF<SequenceContainer>([](auto const v) { return std::to_string(v); });
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     SequenceContainer<int> const empty;
 
@@ -83,7 +83,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const container_of_ints = SequenceContainer<int>{1, 2};
 
@@ -123,7 +123,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     return std::to_string(std::stoi(a) * b);
                 };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     SequenceContainer<std::string> const empty_of_string;
 
@@ -140,7 +140,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const first_container_of_string = SequenceContainer<std::string>{"2", "3"};
 
@@ -184,13 +184,13 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     return SequenceContainer<std::string>{std::to_string(v), std::to_string(v)};
                 };
 
-                WHEN("when empty") {
+                WHEN("empty") {
 
                     SequenceContainer<int> const empty;
 
                     THEN("return an empty SequenceContainer") {
 
-                        auto const empty_of_string = SequenceContainer<int>{} >>= to_SequenceContainer_string;
+                        auto const empty_of_string = SequenceContainer<int>{} >> to_SequenceContainer_string;
 
                         static_assert(
                             is_same_after_decaying<decltype(empty_of_string), SequenceContainer<std::string>>);
@@ -199,13 +199,13 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
 
-                WHEN("when not empty") {
+                WHEN("not empty") {
 
                     auto const container = SequenceContainer<int>{1, 2};
 
                     THEN("return a non-empty SequenceContainer containing the bound value") {
 
-                        auto const container_of_string = container >>= to_SequenceContainer_string;
+                        auto const container_of_string = container >> to_SequenceContainer_string;
 
                         static_assert(
                             is_same_after_decaying<decltype(container_of_string), SequenceContainer<std::string>>);

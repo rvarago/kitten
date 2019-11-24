@@ -16,9 +16,9 @@ namespace rvarago::kitten {
  *
  * Laws:
  *
- * - Left identity: return a >>= f == f a
- * - Right identity: m >>= return == m
- * - Associativity: (m >>= f) >>= g == m >>= (\x -> f x >>= g)
+ * - Left identity: return a >> f == f a
+ * - Right identity: m >> return == m
+ * - Associativity: (m >> f) >> g == m >> (\x -> f x >> g)
  */
 template <template <typename...> typename M, typename = void>
 struct monad;
@@ -63,7 +63,7 @@ constexpr decltype(auto) bind(M<A> const &input, UnaryFunction f) {
  * Infix version of bind.
  */
 template <template <typename...> typename M, typename A, typename UnaryFunction>
-constexpr decltype(auto) operator>>=(M<A> const &input, UnaryFunction f) {
+constexpr decltype(auto) operator>>(M<A> const &input, UnaryFunction f) {
     return bind(input, f);
 }
 
