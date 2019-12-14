@@ -2,6 +2,7 @@
 #define RVARAGO_KITTEN_SEQUENCE_CONTAINER_H
 
 #include <deque>
+#include <iterator>
 #include <list>
 #include <type_traits>
 #include <vector>
@@ -9,6 +10,7 @@
 #include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
+#include "kitten/monoid.h"
 
 #include "kitten/detail/deriving/from_monad/derive_applicative.h"
 #include "kitten/detail/deriving/from_monad/derive_functor.h"
@@ -81,6 +83,24 @@ struct functor<SequenceContainer> {
     }
 };
 
+template <template <typename...> typename SequenceContainer>
+struct monoid<SequenceContainer> {
+
+    template <typename A, typename BinaryFunction, typename = detail::enable_if_sequence_container<SequenceContainer>>
+    static constexpr auto mappend(SequenceContainer<A> const &first, SequenceContainer<A> const &second, BinaryFunction)
+        -> SequenceContainer<A> {
+        using namespace detail::ranges;
+        auto appended_sequence = SequenceContainer<A>{};
+        copy(second, copy(first, std::back_inserter(appended_sequence)));
+        return appended_sequence;
+    }
+
+    template <typename A, typename = detail::enable_if_sequence_container<SequenceContainer>>
+    static constexpr auto mempty() -> SequenceContainer<A> {
+        return SequenceContainer<A>{};
+    }
+};
+
 namespace traits {
 template <template <typename...> typename SequenceContainer>
 struct is_monad<SequenceContainer> : std::true_type {};
@@ -90,6 +110,9 @@ struct is_applicative<SequenceContainer> : std::true_type {};
 
 template <template <typename...> typename SequenceContainer>
 struct is_functor<SequenceContainer> : std::true_type {};
+
+template <template <typename...> typename SequenceContainer>
+struct is_monoid<SequenceContainer> : std::true_type {};
 }
 
 }

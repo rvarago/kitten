@@ -6,6 +6,7 @@
 #include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
+#include "kitten/monoid.h"
 
 #include "kitten/detail/deriving/from_monad/derive_applicative.h"
 #include "kitten/detail/deriving/from_monad/derive_functor.h"
@@ -54,6 +55,30 @@ struct functor<std::optional> {
     }
 };
 
+template <>
+struct monoid<std::optional> {
+
+    template <typename A, typename BinaryFunction>
+    static constexpr auto mappend(std::optional<A> const &first, std::optional<A> const &second, BinaryFunction f)
+        -> std::optional<A> {
+        if (first.has_value() && second.has_value()) {
+            return std::make_optional(f(*first, *second));
+        }
+        if (first.has_value()) {
+            return first;
+        }
+        if (second.has_value()) {
+            return second;
+        }
+        return mempty<A>();
+    }
+
+    template <typename A>
+    static constexpr auto mempty() -> std::optional<A> {
+        return std::nullopt;
+    }
+};
+
 namespace traits {
 template <>
 struct is_monad<std::optional> : std::true_type {};
@@ -63,6 +88,9 @@ struct is_applicative<std::optional> : std::true_type {};
 
 template <>
 struct is_functor<std::optional> : std::true_type {};
+
+template <>
+struct is_monoid<std::optional> : std::true_type {};
 }
 
 }

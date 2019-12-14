@@ -4,6 +4,7 @@
 #include "kitten/applicative.h"
 #include "kitten/functor.h"
 #include "kitten/monad.h"
+#include "kitten/monoid.h"
 #include "kitten/multifunctor.h"
 
 #endif

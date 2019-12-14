@@ -245,6 +245,71 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                 }
             }
         }
+
+        AND_GIVEN("a monoid instance") {
+
+            WHEN("mempty should return empty") {
+                auto const empty = mempty<SequenceContainer, int>();
+                CHECK(empty.empty());
+            }
+
+            WHEN("only left is empty") {
+
+                SequenceContainer<int> const left_empty = mempty<SequenceContainer, int>();
+                CHECK(left_empty.empty());
+
+                THEN("mappend should return right") {
+
+                    auto const right_singleton = SequenceContainer<int>{1};
+
+                    auto const appended_singleton = mappend(left_empty, right_singleton);
+
+                    CHECK(appended_singleton.size() == 1);
+                    CHECK(appended_singleton == SequenceContainer<int>{1});
+                }
+
+                WHEN("only right is empty") {
+
+                    auto const right_empty = mempty<SequenceContainer, int>();
+                    CHECK(right_empty.empty());
+
+                    THEN("mappend should return left") {
+
+                        auto const left_singleton = SequenceContainer<int>{1};
+
+                        auto const appended_singleton = mappend(left_singleton, right_empty);
+
+                        CHECK(appended_singleton.size() == 1);
+                        CHECK(appended_singleton == SequenceContainer<int>{1});
+                    }
+
+                    WHEN("left and right are both empties") {
+
+                        THEN("mappend should return empty") {
+
+                            auto const appended_empty = mappend(left_empty, right_empty);
+
+                            CHECK(appended_empty.empty());
+                        }
+                    }
+                }
+            }
+
+            WHEN("neither left nor right are empties") {
+
+                auto const singleton_one = SequenceContainer<int>{1};
+                auto const singleton_two = SequenceContainer<int>{2};
+
+                THEN("mappend should append the containers left and right") {
+
+                    auto const appended = mappend(singleton_one, singleton_two);
+
+                    CHECK(!appended.empty());
+                    CHECK(appended.size() == 2);
+                    CHECK(appended == SequenceContainer<int>{1, 2});
+                }
+            }
+        }
     }
 }
 }

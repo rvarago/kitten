@@ -190,7 +190,7 @@ Thus, the result of the whole composition is of type `std::optional<name>`.
 
 A multi-functor generalizes a functor in the sense that instead of having only 1 type parameter, it can have `N` different types.
 
-Given a multi-functor of arity 2, also called bi-functor,`X<A1, B1>`, and the functions `fa: A1 -> A2` and `fb: B1-> B2`,
+Given a multi-functor of arity 2, also called bi-functor,`X<A1, B1>`, and the functions `fa: A1 -> A2` and `fb: B1 -> B2`,
 a multi-functor uses `multimap` to instantiate a new bi-functor `X<A2, B2>` via mapping the types through  `fa` and `fb`.
 
 An interesting use case for a multi-functor is where we have a function that returns an `std::variant<A1, B1, C1>` and we
@@ -208,6 +208,42 @@ auto const variant_A2_B2_C2 = variant_A1_B1_C1 || syntax::overloaded {
 Where `syntax::overloaded` is a helper function that enables us to create a function object on-the-fly, that receives a
 set of lambda expressions, and the right overload is then selected at compile-time depending on the type held by the
 `std::variant<A1, B1, C1>`.
+
+## Monoids
+
+A monoid is a type that admits a binary operation:
+
+`mappend(X<A>, X<A>, w: (X<A>, X<A>) -> X<A>): X<A>`
+
+And an identity element:
+
+`mempty: X<A>`
+
+Such that that following properties hold:
+
+```
+- Associativity: (a mappend b) mappend c = a mappend (b mappend c) = a mappend b mappend c
+- Identity: mempty mappend a = a mappend mempty = a
+```
+
+For instance, in set of integers, if we take addition as the binary operation and 0 as the identity, then it forms a monoid.
+
+One use-case is for concatenating two `std::optional<std::string>`, let's say we have the functions:
+
+```
+- maybe_fizz(int n): std::optional<std::string>
+- maybe_buzz(int n): std::optional<std::string>
+```
+
+That may or may not return the strings "Fizz" and "Buzz", respectively, accordingly to the rules of [Fizz-buzz](https://en.wikipedia.org/wiki/Fizz_buzz).
+
+We could then write a function `fizzbuzz` that explores the monoidal aspect of `std::optional<T>` exposed by _kitten_ like so:
+
+```
+std::string fizzbuzz(int n) {
+    return mappend(maybe_fizz(n), maybe_buzz(n)).value_or(std::to_string(n));
+}
+```
 
 ## kitten
 
@@ -251,18 +287,26 @@ Note that it's possible that a type may not admit instances for all the structur
 |      `wrap`       |               |
 |      `bind`       |        >>     |
 
+### Monoid
+
+|    Combinator     |      Infix    |
+|:-----------------:|:-------------:|
+|      `mempty`     |               |
+|      `mappend`    |               |
+
+
 ### Adapters
 
 The following types are currently supported:
 
-|         Type                      | Functor | Applicative | Monad   | Multi-functor |
-|:---------------------------------:|:-------:|-------------|---------|:-------------:|
-| `types::function_wrapper<F>`      |    x    |             |         |               |
-| `std::optional<T>`                |    x    |     x       |   x     |               |
-| `std::deque<T>`                   |    x    |     x       |   x     |               |
-| `std::list<T>`                    |    x    |     x       |   x     |               |
-| `std::variant<T...>`              |         |             |         |       x       |
-| `std::vector<T>`                  |    x    |     x       |         |               |
+|         Type                      | Functor | Applicative | Monad   | Multi-functor |    Monoid     |
+|:---------------------------------:|:-------:|-------------|---------|:-------------:|:-------------:|
+| `types::function_wrapper<F>`      |    x    |             |         |               |               |
+| `std::optional<T>`                |    x    |     x       |   x     |               |       x       |
+| `std::deque<T>`                   |    x    |     x       |   x     |               |       x       |
+| `std::list<T>`                    |    x    |     x       |   x     |               |       x       |
+| `std::variant<T...>`              |         |             |         |       x       |               |
+| `std::vector<T>`                  |    x    |     x       |         |               |       x       |
 
 - `types::function_wrapper<F>` is a callable wrapper around a function-like type, e.g. function, function object, etc.
 And it allows using `fmap` to compose functions, e.g. given `fx : A -> B` and

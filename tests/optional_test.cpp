@@ -230,6 +230,70 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                 }
             }
         }
+
+        AND_GIVEN("a monoid instance") {
+
+            WHEN("mempty should return empty") {
+                auto const none = mempty<std::optional, int>();
+                CHECK(!none.has_value());
+            }
+
+            WHEN("only left is empty") {
+
+                std::optional<int> const left_none = mempty<std::optional, int>();
+                CHECK(!left_none.has_value());
+
+                THEN("mappend should return right") {
+
+                    auto const right_some = std::optional{1};
+
+                    auto const appended_some = mappend(left_none, right_some, std::plus<>{});
+
+                    CHECK(appended_some.has_value());
+                    CHECK(appended_some.value() == 1);
+                }
+
+                WHEN("only right is empty") {
+
+                    auto const right_none = mempty<std::optional, int>();
+                    CHECK(!right_none.has_value());
+
+                    THEN("mappend should return left") {
+
+                        auto const left_some = std::optional{1};
+
+                        auto const appended_some = mappend(left_some, right_none, std::plus<>{});
+
+                        CHECK(appended_some.has_value());
+                        CHECK(appended_some.value() == 1);
+                    }
+
+                    WHEN("left and right are both empties") {
+
+                        THEN("mappend should return empty") {
+
+                            auto const appended_none = mappend(left_none, right_none, std::plus<>{});
+
+                            CHECK(!appended_none.has_value());
+                        }
+                    }
+                }
+            }
+
+            WHEN("neither left nor right are empties") {
+
+                auto const left_some = std::optional{1};
+                auto const right_some = std::optional{1};
+
+                THEN("mappend should return the sum of the wrapped values inside left and right") {
+
+                    auto const appended_some = mappend(left_some, right_some, std::plus<>{});
+
+                    CHECK(appended_some.has_value());
+                    CHECK(appended_some.value() == 2);
+                }
+            }
+        }
     }
 }
 }
