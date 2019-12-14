@@ -47,8 +47,8 @@ constexpr decltype(auto) pure(A &&value) {
  * @return a new applicative apc: AP[C] resulting from wrapping the application of f over the wrapped value inside apa
  * and apb
  */
-template <template <typename...> typename AP, typename A, typename B, typename BinaryFunction>
-constexpr decltype(auto) combine(AP<A> const &first, AP<B> const &second, BinaryFunction f) {
+template <template <typename...> typename AP, typename A, typename B, typename BinaryFunction = std::plus<>>
+constexpr decltype(auto) combine(AP<A> const &first, AP<B> const &second, BinaryFunction f = BinaryFunction{}) {
     static_assert(traits::is_applicative_v<AP>, "type constructor AP does not have an applicative instance");
     return applicative<AP>::combine(first, second, f);
 }
@@ -66,7 +66,7 @@ constexpr decltype(auto) operator+(std::tuple<AP<A>, AP<B>> const &input, Binary
  */
 template <template <typename...> typename AP, typename A, typename B>
 constexpr decltype(auto) operator+(AP<A> const &first, AP<B> const &second) {
-    return combine(first, second, std::plus{});
+    return combine(first, second);
 }
 
 }
