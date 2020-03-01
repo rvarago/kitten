@@ -13,11 +13,6 @@ using namespace std::string_literals;
 using namespace rvarago::kitten;
 using test::utils::is_same_after_decaying;
 
-template <typename Range, typename Index>
-decltype(auto) value_at(Range const &container, Index index) {
-    return *std::next(std::cbegin(container), index);
-}
-
 template <typename T, typename Allocator = std::allocator<T>>
 using SequenceContainer = std::vector<T, Allocator>;
 
@@ -58,8 +53,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                             is_same_after_decaying<decltype(container_of_strings), SequenceContainer<std::string>>);
 
                         CHECK(container_of_strings.size() == 2);
-                        CHECK(value_at(container_of_strings, 0) == "1"s);
-                        CHECK(value_at(container_of_strings, 1) == "2"s);
+                        CHECK(container_of_strings == SequenceContainer<std::string>{"1", "2"});
                     }
                 }
             }
@@ -95,8 +89,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                             is_same_after_decaying<decltype(container_of_strings), SequenceContainer<std::string>>);
 
                         CHECK(container_of_strings.size() == 2);
-                        CHECK(value_at(container_of_strings, 0) == "1"s);
-                        CHECK(value_at(container_of_strings, 1) == "2"s);
+                        CHECK(container_of_strings == SequenceContainer<std::string>{"1", "2"});
                     }
                 }
             }
@@ -113,7 +106,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
 
                     CHECK(singleton.size() == 1);
-                    CHECK(value_at(singleton, 0) == "1"s);
+                    CHECK(singleton == SequenceContainer<std::string>{"1"});
                 }
             }
 
@@ -154,10 +147,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                             is_same_after_decaying<decltype(product_of_string), SequenceContainer<std::string>>);
 
                         CHECK(product_of_string.size() == 4);
-                        CHECK(value_at(product_of_string, 0) == "40"s);
-                        CHECK(value_at(product_of_string, 1) == "60"s);
-                        CHECK(value_at(product_of_string, 2) == "60"s);
-                        CHECK(value_at(product_of_string, 3) == "90"s);
+                        CHECK(product_of_string == SequenceContainer<std::string>{"40", "60", "60", "90"});
                     }
                 }
             }
@@ -215,7 +205,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                 static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
 
                 CHECK(singleton.size() == 1);
-                CHECK(value_at(singleton, 0) == "1"s);
+                CHECK(singleton == SequenceContainer<std::string>{"1"});
             }
         }
 
@@ -251,10 +241,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                         is_same_after_decaying<decltype(container_of_string), SequenceContainer<std::string>>);
 
                     CHECK(container_of_string.size() == 4);
-                    CHECK(value_at(container_of_string, 0) == "1"s);
-                    CHECK(value_at(container_of_string, 1) == "1"s);
-                    CHECK(value_at(container_of_string, 2) == "2"s);
-                    CHECK(value_at(container_of_string, 3) == "2"s);
+                    CHECK(container_of_string == SequenceContainer<std::string>{"1", "1", "2", "2"});
                 }
             }
         }
