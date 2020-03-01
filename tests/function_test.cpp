@@ -24,7 +24,7 @@ SCENARIO("function_wrapper admits a functor instance", "[function_wrapper]") {
 
                 WHEN("they are wrapped in function wrappers") {
 
-                    AND_WHEN("fmap") {
+                    AND_WHEN("transform") {
 
                         THEN("return the composition of a function wrapper from double to string") {
 

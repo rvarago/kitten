@@ -19,7 +19,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
         AND_GIVEN("a functor instance") {
 
-            AND_GIVEN("fmap") {
+            AND_GIVEN("transform") {
 
                 auto to_string = [](auto const v) { return std::to_string(v); };
 

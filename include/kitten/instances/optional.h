@@ -48,9 +48,9 @@ template <>
 struct functor<std::optional> {
 
     template <typename A, typename UnaryFunction>
-    static constexpr auto fmap(std::optional<A> const &input, UnaryFunction f)
+    static constexpr auto transform(std::optional<A> const &input, UnaryFunction f)
         -> std::optional<decltype(f(std::declval<A>()))> {
-        return detail::deriving::fmap(input, f);
+        return detail::deriving::transform(input, f);
     }
 };
 

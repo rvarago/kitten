@@ -35,15 +35,15 @@ struct functor<types::function_wrapper> {
 
     /**
      * Composes the functions first and second, in such a way that the result of the first feeds the second, i.e:
-     *  fmap(first, second)(x) = second(fist(second))
+     *  transform(first, second)(x) = second(fist(second))
      *
      * @param first a function A -> B to applied when the argument A are provided
      * @param second function B -> C to be applied with the result from previous application of first
      * @return a function composition A -> C that, when its argument is provided, applied first and then second
      */
     template <typename UnaryFunctionA, typename UnaryFunctionB>
-    static constexpr decltype(auto) fmap(types::function_wrapper<UnaryFunctionA> const &first,
-                                         types::function_wrapper<UnaryFunctionB> const &second) {
+    static constexpr decltype(auto) transform(types::function_wrapper<UnaryFunctionA> const &first,
+                                              types::function_wrapper<UnaryFunctionB> const &second) {
         return types::fn(
             [first, second](auto &&... args) { return second(first(std::forward<decltype(args)>(args)...)); });
     }

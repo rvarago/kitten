@@ -51,11 +51,11 @@ Given that we can't do the usual function composition, we need a more powerful w
 
 We need a functor.
 
-If `X<T>` admits a functor for some type parameter `T`, we can compose `f` and `g` by using `fmap`:
+If `X<T>` admits a functor for some type parameter `T`, we can compose `f` and `g` by using `transform`:
 
-`fmap(X<A>, w: A -> B): X<B>`
+`transform(X<A>, w: A -> B): X<B>`
 
-`fmap` receives a functor `X<A>`, a function `w: A -> B` that would do the composition of the types `A` and `B`, and
+`transform` receives a functor `X<A>`, a function `w: A -> B` that would do the composition of the types `A` and `B`, and
 it returns a new functor `X<B>`. It basically:
  
 1. unwraps `X<A>` into `A`
@@ -65,12 +65,12 @@ it returns a new functor `X<B>`. It basically:
 
 Hence, we can do:
 
-`fmap(f(), g)`
+`transform(f(), g)`
 
 Using _kitten_, one example of using a functor is:
 
 ```
-auto const maybe_name = maybe_find_person() | get_name; // or fmap(maybe_find_person(), get_name)
+auto const maybe_name = maybe_find_person() | get_name; // or transform(maybe_find_person(), get_name)
 ```
 
 Where `maybe_find_person` returns an `std::optional<person>`, and then the wrapped object of type `person` is fed into
@@ -88,7 +88,7 @@ What happens if `f` takes several arguments? For instance, we have the objects `
 function `f: (A, B) -> C`.
 How can we combine two effects `xa` and `xb` via `f` to obtain `X<C>`?
 
-If we use `fmap` as we did before, we wouldn't be able, because `fmap` accepts only one argument, and we need to somehow
+If we use `transform` as we did before, we wouldn't be able, because `transform` accepts only one argument, and we need to somehow
 provide two.
 
 We need a structure that's more powerful than a functor, we need an applicative.
@@ -151,7 +151,7 @@ Another helpful function provided by applicatives is  `liftA2`, which generalize
 What happens if `f` and `g` are both effectul functions: `f: A -> X<B>` and `g: B -> X<C>`. How can
 we compose `f` and `g`?
 
-If we use `fmap` as we did before, we would end up with a return type `X<X<C>>`, that nests the same effect. This type
+If we use `transform` as we did before, we would end up with a return type `X<X<C>>`, that nests the same effect. This type
 would then need to be flattened, or collapsed, into an `X<C>`, we need a structure that knows how to flat the effects.
 
 We need a structure that's more powerful than a functor, we need a monad.
@@ -226,7 +226,7 @@ Note that it's possible that a type may not admit instances for all the structur
 
 |    Combinator     |   Infix  |
 |:-----------------:|:--------:|
-|      `fmap`       | &#x7c;   |
+|      `transform`  | &#x7c;   |
 |      `liftF`      |          |
 
 ### Multi-functor
@@ -265,11 +265,11 @@ The following types are currently supported:
 | `std::vector<T>`                  |    x    |     x       |         |               |
 
 - `types::function_wrapper<F>` is a callable wrapper around a function-like type, e.g. function, function object, etc.
-And it allows using `fmap` to compose functions, e.g. given `fx : A -> B` and
+And it allows using `transform` to compose functions, e.g. given `fx : A -> B` and
 `fy: B -> C`, and both wrapped around `types::function_wrapper` which can conveniently be done
-by the helper function `types::fn`, then `fmap(fx, fy)` returns a new `types::function_wrapper`
+by the helper function `types::fn`, then `transform(fx, fy)` returns a new `types::function_wrapper`
  `fz: A -> C` that applies `fx` and then `fy`. So, by providing an argument
- `x` of type `A`, we have: `fmap(fx, fy)(x) == fy(fx(x))`.
+ `x` of type `A`, we have: `transform(fx, fy)(x) == fy(fx(x))`.
 
 ## Requirements
 

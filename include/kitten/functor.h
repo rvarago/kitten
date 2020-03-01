@@ -11,8 +11,8 @@ namespace rvarago::kitten {
  *
  * Laws:
  *
- * - Identity: fmap (f . g)  ==  fmap f . fmap g
- * - Composition: fmap id = id
+ * - Identity: transform (f . g)  ==  transform f . transform g
+ * - Composition: transform id = id
  */
 template <template <typename...> typename F, typename = void>
 struct functor;
@@ -34,17 +34,17 @@ inline constexpr bool is_functor_v = is_functor<F>::value;
  * @return a new functor fb: F[B] resulting from wrapping the application of f over the unwrapped value from fa
  */
 template <template <typename...> typename F, typename A, typename UnaryFunction>
-constexpr decltype(auto) fmap(F<A> const &input, UnaryFunction f) {
+constexpr decltype(auto) transform(F<A> const &input, UnaryFunction f) {
     static_assert(traits::is_functor_v<F>, "type constructor F does not have a functor instance");
-    return functor<F>::fmap(input, f);
+    return functor<F>::transform(input, f);
 }
 
 /**
- * Infix version of fmap.
+ * Infix version of transform.
  */
 template <template <typename...> typename F, typename A, typename UnaryFunction>
 constexpr decltype(auto) operator|(F<A> const &input, UnaryFunction f) {
-    return fmap(input, f);
+    return transform(input, f);
 }
 
 /**
@@ -55,7 +55,7 @@ constexpr decltype(auto) operator|(F<A> const &input, UnaryFunction f) {
  */
 template <template <typename...> typename F, typename UnaryFunction>
 constexpr decltype(auto) liftF(UnaryFunction f) {
-    return [f](auto const &input) { return functor<F>::fmap(input, f); };
+    return [f](auto const &input) { return functor<F>::transform(input, f); };
 }
 
 }

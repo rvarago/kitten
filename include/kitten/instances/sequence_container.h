@@ -76,9 +76,9 @@ template <template <typename...> typename SequenceContainer>
 struct functor<SequenceContainer> {
 
     template <typename A, typename UnaryFunction, typename = detail::enable_if_sequence_container<SequenceContainer>>
-    static constexpr auto fmap(SequenceContainer<A> const &input, UnaryFunction f)
+    static constexpr auto transform(SequenceContainer<A> const &input, UnaryFunction f)
         -> SequenceContainer<decltype(f(std::declval<A>()))> {
-        return detail::deriving::fmap(input, f);
+        return detail::deriving::transform(input, f);
     }
 };
 
