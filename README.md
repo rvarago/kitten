@@ -143,6 +143,9 @@ auto const maybe_six_as_string = std::tuple{maybe_two, maybe_three} + [](auto co
 };
 ```
 
+Another helpful function provided by applicatives is  `liftA2`, which generalizes `liftF` for binaries functions of kind
+`w: A -> B -> C`, lifting it into another function `z: X[A] -> X[B] -> X[C]`, where `X[T]` is some applicative.
+
 ### Monads
 
 What happens if `f` and `g` are both effectul functions: `f: A -> X<B>` and `g: B -> X<C>`. How can
@@ -238,6 +241,7 @@ Note that it's possible that a type may not admit instances for all the structur
 |:-----------------:|:-------------:|
 |      `pure`       |               |
 |      `combine`    |        +      |
+|      `liftA2`     |               |
 
 
 ### Monad

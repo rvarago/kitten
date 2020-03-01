@@ -69,6 +69,17 @@ constexpr decltype(auto) operator+(AP<A> const &first, AP<B> const &second) {
     return combine(first, second);
 }
 
+/**
+ * lifts a binary function f: A -> B -> C into an applicative context fap: AP[A] -> AP[B] -> AP[C].
+ *
+ * @param f binary function f: A -> B -> C to be lifted into the applicative AP[T] context.
+ * @return the lifted version of f that operates on applicatives.
+ */
+template <template <typename...> typename AP, typename BinaryFunction>
+constexpr decltype(auto) liftA2(BinaryFunction f) {
+    return [f](auto const &first, auto const &second) { return combine<AP>(first, second, f); };
+}
+
 }
 
 #endif
