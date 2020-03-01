@@ -11,7 +11,7 @@ class KittenConan(ConanFile):
     url         = homepage
     exports 	= ["README.md", "LICENSE"]
 
-    build_requires  = "catch2/2.5.0@bincrafters/stable"
+    build_requires  = "catch2/2.11.0"
     generators      = "cmake_find_package"
 
     exports_sources = "include/*"
