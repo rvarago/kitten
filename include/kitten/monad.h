@@ -12,7 +12,7 @@ namespace rvarago::kitten {
  *  It uses f to map over the value unwrapped from ma, flats the return type, and then returns a new monad mb: M[B].
  *
  * Note that if we had done as we do for functors, i.e. to do map(ma, f), we'd have a M[M[B]] that would have to be
- * flattened. Whereas bind performs both the mapping and the flattening.
+ * flattened. Whereas and_then performs both the mapping and the flattening.
  *
  * Laws:
  *
@@ -54,17 +54,17 @@ constexpr decltype(auto) wrap(A &&value) {
  * result
  */
 template <template <typename...> typename M, typename A, typename UnaryFunction>
-constexpr decltype(auto) bind(M<A> const &input, UnaryFunction f) {
+constexpr decltype(auto) and_then(M<A> const &input, UnaryFunction f) {
     static_assert(traits::is_monad_v<M>, "type constructor M does not have a monad instance");
-    return monad<M>::bind(input, f);
+    return monad<M>::and_then(input, f);
 }
 
 /**
- * Infix version of bind.
+ * Infix version of and_then.
  */
 template <template <typename...> typename M, typename A, typename UnaryFunction>
 constexpr decltype(auto) operator>>(M<A> const &input, UnaryFunction f) {
-    return bind(input, f);
+    return and_then(input, f);
 }
 
 }

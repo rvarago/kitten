@@ -10,8 +10,8 @@ template <template <typename...> typename M, typename A, typename B, typename Bi
 constexpr auto combine(M<A> const &first, M<B> const &second, BinaryFunction f)
     -> M<decltype(f(std::declval<A>(), std::declval<B>()))> {
     using MonadT = monad<M>;
-    return MonadT::bind(first, [&second, f](auto const &first_value) {
-        return MonadT::bind(
+    return MonadT::and_then(first, [&second, f](auto const &first_value) {
+        return MonadT::and_then(
             second, [&first_value, f](auto const &second_value) { return MonadT::wrap(f(first_value, second_value)); });
     });
 }

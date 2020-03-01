@@ -209,7 +209,7 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
             }
         }
 
-        AND_GIVEN("bind") {
+        AND_GIVEN("and_then") {
 
             auto to_SequenceContainer_string = [](auto v) {
                 return SequenceContainer<std::string>{std::to_string(v), std::to_string(v)};

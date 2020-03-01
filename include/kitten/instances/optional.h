@@ -16,7 +16,7 @@ template <>
 struct monad<std::optional> {
 
     template <typename A, typename UnaryFunction>
-    static constexpr auto bind(std::optional<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
+    static constexpr auto and_then(std::optional<A> const &input, UnaryFunction f) -> decltype(f(std::declval<A>())) {
         if (!input.has_value()) {
             return std::nullopt;
         }

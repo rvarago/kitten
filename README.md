@@ -156,11 +156,11 @@ would then need to be flattened, or collapsed, into an `X<C>`, we need a structu
 
 We need a structure that's more powerful than a functor, we need a monad.
 
-If `X<T>` admits a monad for some type parameter `T`, we can compose `f` and `g` by using `bind`:
+If `X<T>` admits a monad for some type parameter `T`, we can compose `f` and `g` by using `and_then`:
 
-`bind(X<A>, w: A -> X<B>): X<B>`
+`and_then(X<A>, w: A -> X<B>): X<B>`
 
-`bind` receives a monad `X<A>`, a function `w: A -> X<B>` that would do the composition of the types `A` and
+`and_then` receives a monad `X<A>`, a function `w: A -> X<B>` that would do the composition of the types `A` and
 `X<B>`, and it returns a new monad `X<B>`. It basically:
  
 1. unwraps `X<A>` into `A`
@@ -170,7 +170,7 @@ If `X<T>` admits a monad for some type parameter `T`, we can compose `f` and `g`
 
 Hence, we can do:
 
-`bind(f(), g)`
+`and_then(f(), g)`
 
 In addition, a monad also has a function `wrap(A): X<A>` that allows one to lift a value
 of type `A` into a monad `X<A>`.
@@ -178,7 +178,7 @@ of type `A` into a monad `X<A>`.
 Using _kitten_, one example of using a monad is:
 
 ```
-auto const maybe_name = maybe_find_person() >> maybe_get_name; // or bind(maybe_find_person(), maybe_get_name)
+auto const maybe_name = maybe_find_person() >> maybe_get_name; // or and_then(maybe_find_person(), maybe_get_name)
 ```
 
 Where `maybe_find_person` returns an `std::optional<person>`, and then the wrapped object of type `person` is fed into
@@ -249,7 +249,7 @@ Note that it's possible that a type may not admit instances for all the structur
 |    Combinator     |      Infix    |
 |:-----------------:|:-------------:|
 |      `wrap`       |               |
-|      `bind`       |        >>     |
+|      `and_then`   |        >>     |
 
 ### Adapters
 

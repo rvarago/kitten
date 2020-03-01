@@ -195,7 +195,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
                 }
             }
 
-            AND_GIVEN("bind") {
+            AND_GIVEN("and_then") {
 
                 auto to_optional_string = [](auto v) { return std::optional{std::to_string(v)}; };
                 auto to_optional_int = [](auto v) { return std::optional{std::stoi(v)}; };
