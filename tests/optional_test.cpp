@@ -4,6 +4,7 @@
 #include <string>
 
 #include "utils.h"
+#include <functional>
 
 namespace {
 
@@ -91,7 +92,7 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
             AND_GIVEN("pure") {
 
-                THEN("lift into a non-empty optioanl") {
+                THEN("lift into a non-empty optional") {
 
                     auto const some_one = pure<std::optional>("1"s);
 
@@ -134,6 +135,46 @@ SCENARIO("optional admits functor, applicative, and monad instances", "[optional
 
                         CHECK(product_of_string.has_value());
                         CHECK(product_of_string.value() == "6"s);
+                    }
+                }
+            }
+
+            AND_GIVEN("liftA2") {
+
+                auto const lifted_plus = liftA2<std::optional>(std::plus<int>{});
+
+                WHEN("any is empty") {
+
+                    THEN("the lifted function that adds to integers into one should return an empty optional") {
+
+                        std::optional<int> const none = std::nullopt;
+                        auto const some = std::optional{42};
+
+                        auto const left_sum = lifted_plus(none, some);
+                        auto const right_sum = lifted_plus(some, none);
+
+                        static_assert(is_same_after_decaying<decltype(left_sum), std::optional<int>>);
+                        static_assert(is_same_after_decaying<decltype(right_sum), std::optional<int>>);
+
+                        CHECK(!left_sum.has_value());
+                        CHECK(!right_sum.has_value());
+                    }
+                }
+
+                WHEN("both are not empty") {
+
+                    THEN("the lifted function that adds to integers into one should return a filled optional "
+                         "containing the sum") {
+
+                        auto const some_1 = std::optional{1};
+                        auto const some_2 = std::optional{2};
+
+                        auto const sum = lifted_plus(some_1, some_2);
+
+                        static_assert(is_same_after_decaying<decltype(sum), std::optional<int>>);
+
+                        CHECK(sum.has_value());
+                        CHECK(sum.value() == 3);
                     }
                 }
             }

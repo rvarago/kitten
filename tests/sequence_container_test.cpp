@@ -1,10 +1,10 @@
 #include <catch2/catch.hpp>
 
+#include "utils.h"
+#include <functional>
 #include <iterator>
 #include <kitten/instances/sequence_container.h>
 #include <string>
-
-#include "utils.h"
 
 namespace {
 
@@ -161,61 +161,100 @@ SCENARIO("SequenceContainer admits functor, applicative, and monad instances", "
                     }
                 }
             }
+
+            AND_GIVEN("liftA2") {
+
+                auto const lifted_plus = liftA2<SequenceContainer>(std::plus<int>{});
+
+                WHEN("any is empty") {
+
+                    THEN("the lifted function that adds to integers into one should return an empty optional") {
+
+                        SequenceContainer<int> const empty{};
+                        auto const singleton_one = SequenceContainer<int>{1};
+
+                        auto const left_sum = lifted_plus(empty, singleton_one);
+                        auto const right_sum = lifted_plus(singleton_one, empty);
+
+                        static_assert(is_same_after_decaying<decltype(left_sum), SequenceContainer<int>>);
+                        static_assert(is_same_after_decaying<decltype(right_sum), SequenceContainer<int>>);
+
+                        CHECK(left_sum.empty());
+                        CHECK(right_sum.empty());
+                    }
+                }
+
+                WHEN("both are not empty") {
+
+                    THEN("the lifted function that adds to integers into one should return a filled optional "
+                         "containing the sum") {
+
+                        auto const first_container = SequenceContainer<int>{1, 2};
+                        auto const second_container = SequenceContainer<int>{10, 20};
+
+                        auto const sum = lifted_plus(first_container, second_container);
+
+                        static_assert(is_same_after_decaying<decltype(sum), SequenceContainer<int>>);
+
+                        CHECK(sum.size() == 4);
+                        CHECK(sum == SequenceContainer<int>{11, 21, 12, 22});
+                    }
+                }
+            }
+        }
+    }
+
+    AND_GIVEN("a monad instance") {
+
+        AND_GIVEN("wrap") {
+
+            THEN("lift into a non-empty SequenceContainer") {
+
+                auto const singleton = wrap<SequenceContainer>("1"s);
+
+                static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
+
+                CHECK(singleton.size() == 1);
+                CHECK(value_at(singleton, 0) == "1"s);
+            }
         }
 
-        AND_GIVEN("a monad instance") {
+        AND_GIVEN("bind") {
 
-            AND_GIVEN("wrap") {
+            auto to_SequenceContainer_string = [](auto v) {
+                return SequenceContainer<std::string>{std::to_string(v), std::to_string(v)};
+            };
 
-                THEN("lift into a non-empty SequenceContainer") {
+            WHEN("empty") {
 
-                    auto const singleton = wrap<SequenceContainer>("1"s);
+                SequenceContainer<int> const empty;
 
-                    static_assert(is_same_after_decaying<decltype(singleton), SequenceContainer<std::string>>);
+                THEN("return an empty SequenceContainer") {
 
-                    CHECK(singleton.size() == 1);
-                    CHECK(value_at(singleton, 0) == "1"s);
+                    auto const empty_of_string = SequenceContainer<int>{} >> to_SequenceContainer_string;
+
+                    static_assert(is_same_after_decaying<decltype(empty_of_string), SequenceContainer<std::string>>);
+
+                    CHECK(empty_of_string.empty());
                 }
             }
 
-            AND_GIVEN("bind") {
+            WHEN("not empty") {
 
-                auto to_SequenceContainer_string = [](auto v) {
-                    return SequenceContainer<std::string>{std::to_string(v), std::to_string(v)};
-                };
+                auto const container = SequenceContainer<int>{1, 2};
 
-                WHEN("empty") {
+                THEN("return a non-empty SequenceContainer containing the bound value") {
 
-                    SequenceContainer<int> const empty;
+                    auto const container_of_string = container >> to_SequenceContainer_string;
 
-                    THEN("return an empty SequenceContainer") {
+                    static_assert(
+                        is_same_after_decaying<decltype(container_of_string), SequenceContainer<std::string>>);
 
-                        auto const empty_of_string = SequenceContainer<int>{} >> to_SequenceContainer_string;
-
-                        static_assert(
-                            is_same_after_decaying<decltype(empty_of_string), SequenceContainer<std::string>>);
-
-                        CHECK(empty_of_string.empty());
-                    }
-                }
-
-                WHEN("not empty") {
-
-                    auto const container = SequenceContainer<int>{1, 2};
-
-                    THEN("return a non-empty SequenceContainer containing the bound value") {
-
-                        auto const container_of_string = container >> to_SequenceContainer_string;
-
-                        static_assert(
-                            is_same_after_decaying<decltype(container_of_string), SequenceContainer<std::string>>);
-
-                        CHECK(container_of_string.size() == 4);
-                        CHECK(value_at(container_of_string, 0) == "1"s);
-                        CHECK(value_at(container_of_string, 1) == "1"s);
-                        CHECK(value_at(container_of_string, 2) == "2"s);
-                        CHECK(value_at(container_of_string, 3) == "2"s);
-                    }
+                    CHECK(container_of_string.size() == 4);
+                    CHECK(value_at(container_of_string, 0) == "1"s);
+                    CHECK(value_at(container_of_string, 1) == "1"s);
+                    CHECK(value_at(container_of_string, 2) == "2"s);
+                    CHECK(value_at(container_of_string, 3) == "2"s);
                 }
             }
         }
