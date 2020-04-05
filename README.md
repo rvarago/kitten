@@ -346,16 +346,8 @@ find_package(kitten)
 target_link_libraries(myExample rvarago::kitten)
 ```
 
-## Conan package
+## Package managers
 
-kitten can also be consumed a conan [package](https://bintray.com/conan/conan-center/kitten%3A_) available in the conan-center.
+To simplify the integration, _kitten_ can also be provided by the following package managers:
 
-### Packaging via Conan
-
-It's also possible to generate a package via Conan directly from the source tree:
-
-``
-make conan-package
-``
-
-This will build the package _kitten_, run the test package, and then install it in the local Conan cache.
+1. [Conan](https://bintray.com/conan/conan-center/kitten%3A_)
