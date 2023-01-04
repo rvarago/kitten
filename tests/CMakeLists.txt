@@ -10,8 +10,23 @@ add_executable(${PROJECT_NAME}
         variant_test.cpp
 )
 
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "GNU|Clang")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME}
+            PRIVATE
+                -std=gnu++17
+    )
+else()
+    target_compile_options(${PROJECT_NAME}
+            PRIVATE
+                -std=c++17
+    )
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(${PROJECT_NAME}
             PRIVATE
                 -Wall -Wextra -Werror -ansi -pedantic
     )
